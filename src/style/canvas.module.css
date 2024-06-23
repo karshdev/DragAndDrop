@@ -1,0 +1,10 @@
+.container {
+  background-image: url("../../public/assets/BG.svg");
+  position: relative;
+  z-index: -10;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100wh;
+  max-height: calc(100vh - 150px);
+}
+

@@ -1,18 +1,25 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import { DataContext } from "../context/DataContext";
 
 const CanvasComponent = ({ shapes, setShapes }) => {
+  const { zoomLevel } = useContext(DataContext);
   const canvasRef = useRef(null);
   const [draggingShape, setDraggingShape] = useState(null);
+  const [selectedShape, setSelectedShape] = useState(null);
   const [images, setImages] = useState({});
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
+  const [longPressTimeout, setLongPressTimeout] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     drawShapes(ctx);
-  }, [shapes, images]);
+  }, [shapes, images, zoomLevel, canvasOffset]);
 
   useEffect(() => {
-    const loadImage = (src, width, height) => {
+    const loadImage = (src) => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = src;
@@ -22,9 +29,9 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     };
 
     Promise.all([
-      loadImage("/assets/connector.svg"),
-      loadImage("/assets/img1.svg", 100, 150),
-      loadImage("/assets/img2.svg", 50, 50),
+      loadImage("/assets/EasyPier_Connect.svg"),
+      loadImage("/assets/EasyPier_New.svg"),
+      loadImage("/assets/SmartPier_New.svg"),
       loadImage("/assets/BG.svg"),
     ])
       .then(([connector, img1, img2, bg]) => {
@@ -39,8 +46,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   }, []);
 
   const drawShapes = (ctx) => {
+    ctx.save(); // Save the current state before applying transformations
+    ctx.setTransform(zoomLevel, 0, 0, zoomLevel, canvasOffset.x, canvasOffset.y); // Apply the zoom level and offset
+
     if (images.bg) {
-      ctx.drawImage(images.bg, 0, 0, canvasRef.current.width, canvasRef.current.height);
+      ctx.drawImage(
+        images.bg,
+        0,
+        0,
+        canvasRef.current.width / zoomLevel,
+        canvasRef.current.height / zoomLevel
+      );
     } else {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
@@ -54,7 +70,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         drawImage(ctx, images.img2, shape, 50, 50);
       }
       drawMeasurements(ctx, shape);
+
+      if (shape === selectedShape) {
+        highlightShape(ctx, shape);
+      }
     });
+
+    ctx.restore(); // Restore the state to the original after drawing
   };
 
   const drawImage = (ctx, image, shape, width, height) => {
@@ -76,6 +98,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.fillText(`(${width}x${height})`, shape.x, shape.y - 5);
   };
 
+  const highlightShape = (ctx, shape) => {
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(
+      shape.x - 2,
+      shape.y - 2,
+      shape.type === "img1" ? 104 : 54,
+      shape.type === "img2" ? 154 : 54
+    );
+  };
+
   const drawConnectors = (ctx) => {
     shapes.forEach((shape, index) => {
       shapes.slice(index + 1).forEach((otherShape) => {
@@ -94,13 +127,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     const closeX =
       shape1.y === shape2.y &&
-      (Math.abs(shape1.x - (shape2.x + (shape2.type === "img1" ? 100 : 50))) <= distance ||
-        Math.abs(shape2.x - (shape1.x + (shape1.type === "img1" ? 100 : 50))) <= distance);
+      (Math.abs(shape1.x - (shape2.x + (shape2.type === "img1" ? 100 : 50))) <=
+        distance ||
+        Math.abs(shape2.x - (shape1.x + (shape1.type === "img1" ? 100 : 50))) <=
+          distance);
 
     const closeY =
       shape1.x === shape2.x &&
-      (Math.abs(shape1.y - (shape2.y + (shape2.type === "img1" ? 150 : 50))) <= distance ||
-        Math.abs(shape2.y - (shape1.y + (shape1.type === "img1" ? 150 : 50))) <= distance);
+      (Math.abs(shape1.y - (shape2.y + (shape2.type === "img1" ? 150 : 50))) <=
+        distance ||
+        Math.abs(shape2.y - (shape1.y + (shape1.type === "img1" ? 150 : 50))) <=
+          distance);
 
     return { closeX, closeY };
   };
@@ -137,7 +174,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     } else if (images.connector && shape1.type === "img2") {
       if (closeX) {
         // Draw 5 orange circles horizontally
-        ctx.fillStyle = "#E04B00";
+        ctx.fillStyle = "#000";
         ctx.beginPath();
         ctx.arc(imgX + 10, imgY - 15, 9, 0, 2 * Math.PI); // Draw circle at the top
         ctx.fill();
@@ -147,7 +184,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.fill();
       } else if (closeY) {
         // Draw 3 orange circles vertically
-        ctx.fillStyle = "#E04B00";
+        ctx.fillStyle = "#000";
         ctx.beginPath();
         ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI); // Draw circle on the left
         ctx.fill();
@@ -162,98 +199,144 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const handleMouseDown = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x; // Adjust for zoom level and offset
+    const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y; // Adjust for zoom level and offset
 
     const shape = shapes.find((shape) => {
       const width = shape.type === "img1" ? 100 : 50;
       const height = shape.type === "img1" ? 150 : 50;
-      return mouseX >= shape.x && mouseX <= shape.x + width && mouseY >= shape.y && mouseY <= shape.y + height;
+      return (
+        mouseX >= shape.x &&
+        mouseX <= shape.x + width &&
+        mouseY >= shape.y &&
+        mouseY <= shape.y + height
+      );
     });
 
     if (shape) {
+      setSelectedShape(shape);
       setDraggingShape({
         id: shape.id,
         offsetX: mouseX - shape.x,
         offsetY: mouseY - shape.y,
       });
+    } else {
+      setLongPressTimeout(
+        setTimeout(() => {
+          setIsPanning(true);
+          setPanStart({ x: e.clientX, y: e.clientY });
+        }, 500) // Long press duration (500ms)
+      );
     }
   };
 
   const handleMouseMove = (e) => {
-    if (!draggingShape) return;
+    if (draggingShape) {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x; // Adjust for zoom level and offset
+      const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y; // Adjust for zoom level and offset
 
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+      setShapes((prevShapes) => {
+        return prevShapes.map((shape) => {
+          if (shape.id === draggingShape.id) {
+            const newX = mouseX - draggingShape.offsetX;
+            const newY = mouseY - draggingShape.offsetY;
 
-    setShapes((prevShapes) => {
-      return prevShapes.map((shape) => {
-        if (shape.id === draggingShape.id) {
-          const newX = mouseX - draggingShape.offsetX;
-          const newY = mouseY - draggingShape.offsetY;
+            // Check for snapping
+            let snapX = newX;
+            let snapY = newY;
 
-          // Check for snapping
-          let snapX = newX;
-          let snapY = newY;
+            prevShapes.forEach((otherShape) => {
+              if (otherShape.id !== shape.id && otherShape.type === shape.type) {
+                const width = shape.type === "img1" ? 100 : 50;
+                const height = shape.type === "img1" ? 150 : 50;
 
-          prevShapes.forEach((otherShape) => {
-            if (otherShape.id !== shape.id && otherShape.type === shape.type) {
-              const width = shape.type === "img1" ? 100 : 50;
-              const height = shape.type === "img1" ? 150 : 50;
+                const horizontalSnap =
+                  Math.abs(newX - otherShape.x) <= 20 ||
+                  Math.abs(newX + width - otherShape.x) <= 20 ||
+                  Math.abs(newX - otherShape.x - width) <= 20;
+                const verticalSnap =
+                  Math.abs(newY - otherShape.y) <= 20 ||
+                  Math.abs(newY + height - otherShape.y) <= 20 ||
+                  Math.abs(newY - otherShape.y - height) <= 20;
 
-              const horizontalSnap =
-                Math.abs(newX - otherShape.x) <= 20 ||
-                Math.abs(newX + width - otherShape.x) <= 20 ||
-                Math.abs(newX - otherShape.x - width) <= 20;
-              const verticalSnap =
-                Math.abs(newY - otherShape.y) <= 20 ||
-                Math.abs(newY + height - otherShape.y) <= 20 ||
-                Math.abs(newY - otherShape.y - height) <= 20;
-
-              if (horizontalSnap && Math.abs(newY - otherShape.y) < height / 2) {
-                snapX = newX < otherShape.x ? otherShape.x - width : otherShape.x + width;
-                snapY = otherShape.y; // Align vertically
-              } else if (verticalSnap && Math.abs(newX - otherShape.x) < width / 2) {
-                snapY = newY < otherShape.y ? otherShape.y - height : otherShape.y + height;
-                snapX = otherShape.x; // Align horizontally
+                if (
+                  horizontalSnap &&
+                  Math.abs(newY - otherShape.y) < height / 2
+                ) {
+                  snapX =
+                    newX < otherShape.x
+                      ? otherShape.x - width
+                      : otherShape.x + width;
+                  snapY = otherShape.y; // Align vertically
+                } else if (
+                  verticalSnap &&
+                  Math.abs(newX - otherShape.x) < width / 2
+                ) {
+                  snapY =
+                    newY < otherShape.y
+                      ? otherShape.y - height
+                      : otherShape.y + height;
+                  snapX = otherShape.x; // Align horizontally
+                }
               }
-            }
-          });
+            });
 
-          return {
-            ...shape,
-            x: snapX,
-            y: snapY,
-          };
-        }
-        return shape;
+            return {
+              ...shape,
+              x: snapX,
+              y: snapY,
+            };
+          }
+          return shape;
+        });
       });
-    });
+    } else if (isPanning) {
+      const dx = (e.clientX - panStart.x) / zoomLevel;
+      const dy = (e.clientY - panStart.y) / zoomLevel;
+      setPanStart({ x: e.clientX, y: e.clientY });
+      setCanvasOffset((prevOffset) => ({
+        x: prevOffset.x + dx,
+        y: prevOffset.y + dy,
+      }));
+    }
   };
 
   const handleMouseUp = () => {
+    clearTimeout(longPressTimeout);
     setDraggingShape(null);
+    setIsPanning(false);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(longPressTimeout);
+    setDraggingShape(null);
+    setIsPanning(false);
+  };
+
+  const canvasStyle = {
+    border: "1px solid #ccc",
+    display: "block",
+    backgroundColor: "#fff",
+    cursor: isPanning ? "grabbing" : "default",
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={940}
-      height={600}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      style={canvasStyle}
-    />
+    <div>
+      <canvas
+        ref={canvasRef}
+        width={1000}
+        height={610}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        style={canvasStyle}
+      />
+    </div>
   );
 };
 
-const canvasStyle = {
-  border: "1px solid #ccc",
-  display: "block",
-  backgroundColor: "#fff",
-};
-
 export default CanvasComponent;
+
