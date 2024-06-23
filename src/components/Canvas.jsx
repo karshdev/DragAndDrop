@@ -258,17 +258,15 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x;
     const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y;
-
-    const shape = shapes.find((shape) => {
-      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
-      const height =
-        shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
+    const shape = [...shapes].reverse().find((shape) => {
+      const width = shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
+      const height = shape.type === "img1" ? 150 : shape.type === "smartpier2" || shape.type === "smartpier4" ? 100 : 50;
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
         mouseY >= shape.y - 25 &&
         mouseY <= shape.y - 5;
-
+  
       return (
         rotateIconHit ||
         (mouseX >= shape.x &&
@@ -277,17 +275,16 @@ const CanvasComponent = ({ shapes, setShapes }) => {
           mouseY <= shape.y + height)
       );
     });
-
+  
     if (shape) {
-      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
-      const height =
-        shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
+      const width = shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
+      const height = shape.type === "img1" ? 150 : shape.type === "smartpier2" || shape.type === "smartpier4" ? 100 : 50;
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
         mouseY >= shape.y - 25 &&
         mouseY <= shape.y - 5;
-
+  
       if (rotateIconHit) {
         setRotatingShape({
           id: shape.id,
@@ -312,7 +309,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       );
     }
   };
-
+  
   const handleMouseMove = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();

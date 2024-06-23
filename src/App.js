@@ -7,10 +7,10 @@ import Sidebar from "./components/Sidebar";
 
 const App = () => {
   const [shapes, setShapes] = useState([]);
+  const canvasWidth = 1000;
+  const canvasHeight = 610;
 
   const addShape = (type) => {
-    const containerWidth = 800;
-    const containerHeight = 600;
     const shapes = {
       smartpier1: { width: 50, height: 50 },
       smartpier2: { width: 50, height: 100 },
@@ -20,13 +20,16 @@ const App = () => {
     const shapeWidth = shapes[type].width;
     const shapeHeight = shapes[type].height;
 
+    const centerX = (canvasWidth - shapeWidth) / 2;
+    const centerY = (canvasHeight - shapeHeight) / 2;
+
     setShapes((prevShapes) => [
       ...prevShapes,
       {
         id: prevShapes.length + 1,
         type,
-        x: shapeWidth,
-        y: shapeHeight,
+        x: centerX,
+        y: centerY,
         width: shapeWidth,
         height: shapeHeight,
       },
@@ -37,7 +40,12 @@ const App = () => {
     <>
       <Header setShapes={setShapes} />
       <Sidebar addShape={addShape} />
-      <DragImage shapes={shapes} setShapes={setShapes} />
+      <DragImage
+        shapes={shapes}
+        setShapes={setShapes}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+      />
       <Right addShape={addShape} />
     </>
   );
