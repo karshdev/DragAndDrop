@@ -15,7 +15,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const [longPressTimeout, setLongPressTimeout] = useState(null);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -431,6 +430,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     backgroundColor: "#fff",
     cursor: isPanning ? "grabbing" : "default",
   };
+
 
   return (
     <div>

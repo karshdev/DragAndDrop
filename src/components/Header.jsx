@@ -3,7 +3,7 @@ import { TbArrowBackUp } from "react-icons/tb";
 import { CiZoomIn, CiZoomOut } from "react-icons/ci";
 import { DataContext } from "../context/DataContext";
 
-const Header = ({ setShapes, undo, redo }) => {
+const Header = ({ setShapes, undo }) => {
   const { setZoomLevel } = useContext(DataContext);
 
   const handleZoomIn = () => {
