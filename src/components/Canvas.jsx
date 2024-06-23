@@ -35,7 +35,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     Promise.all([
       loadImage("/assets/EasyPier_Connect.svg"),
       loadImage("/assets/EasyPier_New.svg"),
-      loadImage("/assets/SmartPier1.svg"),
+      loadImage("/assets/Smartpier1.svg"),
       loadImage("/assets/SmartPier2.svg"),
       loadImage("/assets/SmartPier4.svg"),
       loadImage("/assets/BG.svg"),
@@ -262,8 +262,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y;
 
     const shape = shapes.find((shape) => {
-
-       const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
+      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
       const height =
         shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
       const rotateIconHit =
