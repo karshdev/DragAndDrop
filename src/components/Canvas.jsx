@@ -220,7 +220,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const imgX = (x1 + x2) / 2 - 10;
     const imgY = (y1 + y2) / 2 - 10;
 
-    if (images.connector && shape1.type === "smartpier1") {
+    if (images.connector && shape1.type === "img1") {
       if (closeX) {
         ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY - 28, 20, 20);
@@ -232,7 +232,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
       }
-    } else if (shape1.type === "img2") {
+    } else if (shape1.type === "smartpier1") {
       if (closeX) {
         ctx.fillStyle = "#000";
         ctx.beginPath();
