@@ -271,6 +271,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         mouseX <= shape.x + width / 2 + 10 &&
         mouseY >= shape.y - 25 &&
         mouseY <= shape.y - 5;
+
       return (
         rotateIconHit ||
         (mouseX >= shape.x &&
