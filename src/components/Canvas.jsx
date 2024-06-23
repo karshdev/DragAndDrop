@@ -52,15 +52,15 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       })
       .catch((error) => console.error("Error loading images:", error));
 
-    const iconMarkup = renderToStaticMarkup(<FaRotate />);
-    const blob = new Blob([iconMarkup], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const iconImage = new Image();
-    iconImage.src = url;
-    iconImage.onload = () => {
-      setRotateIconImage(iconImage);
-      URL.revokeObjectURL(url); // Clean up object URL after image has loaded
-    };
+    // const iconMarkup = renderToStaticMarkup(<FaRotate />);
+    // const blob = new Blob([iconMarkup], { type: "image/svg+xml" });
+    // const url = URL.createObjectURL(blob);
+    // const iconImage = new Image();
+    // iconImage.src = url;
+    // iconImage.onload = () => {
+    //   setRotateIconImage(iconImage);
+    //   URL.revokeObjectURL(url); // Clean up object URL after image has loaded
+    // };
   }, []);
 
   const drawShapes = (ctx) => {
