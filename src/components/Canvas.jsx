@@ -31,14 +31,18 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     Promise.all([
       loadImage("/assets/EasyPier_Connect.svg"),
       loadImage("/assets/EasyPier_New.svg"),
-      loadImage("/assets/SmartPier_New.svg"),
+      loadImage("/assets/SmartPier1.svg"),
+      loadImage("/assets/SmartPier2.svg"),
+      loadImage("/assets/SmartPier4.svg"),
       loadImage("/assets/BG.svg"),
     ])
-      .then(([connector, img1, img2, bg]) => {
+      .then(([connector, img1, smartpier1, smartpier2, smartpier4, bg]) => {
         setImages({
           connector,
           img1,
-          img2,
+          smartpier1,
+          smartpier2,
+          smartpier4,
           bg,
         });
       })
@@ -47,7 +51,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
   const drawShapes = (ctx) => {
     ctx.save(); // Save the current state before applying transformations
-    ctx.setTransform(zoomLevel, 0, 0, zoomLevel, canvasOffset.x, canvasOffset.y); // Apply the zoom level and offset
+    ctx.setTransform(
+      zoomLevel,
+      0,
+      0,
+      zoomLevel,
+      canvasOffset.x,
+      canvasOffset.y
+    ); // Apply the zoom level and offset
 
     if (images.bg) {
       ctx.drawImage(
@@ -66,8 +77,12 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     shapes.forEach((shape) => {
       if (shape.type === "img1" && images.img1) {
         drawImage(ctx, images.img1, shape, 100, 150);
-      } else if (shape.type === "img2" && images.img2) {
-        drawImage(ctx, images.img2, shape, 50, 50);
+      } else if (shape.type === "smartpier1" && images.smartpier1) {
+        drawImage(ctx, images.smartpier1, shape, 50, 50);
+      } else if (shape.type === "smartpier2" && images.smartpier2) {
+        drawImage(ctx, images.smartpier2, shape, 50, 100);
+      } else if (shape.type === "smartpier4" && images.smartpier4) {
+        drawImage(ctx, images.smartpier4, shape, 100, 100);
       }
       drawMeasurements(ctx, shape);
 
@@ -88,9 +103,15 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     if (shape.type === "img1") {
       width = 100;
       height = 150;
-    } else if (shape.type === "img2") {
+    } else if (shape.type === "smartpier1") {
       width = 50;
       height = 50;
+    } else if (shape.type === "smartpier2") {
+      width = 50;
+      height = 100;
+    } else if (shape.type === "smartpier4") {
+      width = 100;
+      height = 100;
     }
 
     ctx.font = "12px Arial";
@@ -157,7 +178,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const imgX = (x1 + x2) / 2 - 10;
     const imgY = (y1 + y2) / 2 - 10;
 
-    if (images.connector && shape1.type === "img1") {
+    if (images.connector && shape1.type === "smartpier1") {
       if (closeX) {
         // Draw 5 images horizontally
         ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
@@ -203,8 +224,9 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y; // Adjust for zoom level and offset
 
     const shape = shapes.find((shape) => {
-      const width = shape.type === "img1" ? 100 : 50;
-      const height = shape.type === "img1" ? 150 : 50;
+      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
+      const height =
+        shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
       return (
         mouseX >= shape.x &&
         mouseX <= shape.x + width &&
@@ -248,9 +270,18 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             let snapY = newY;
 
             prevShapes.forEach((otherShape) => {
-              if (otherShape.id !== shape.id && otherShape.type === shape.type) {
-                const width = shape.type === "img1" ? 100 : 50;
-                const height = shape.type === "img1" ? 150 : 50;
+              if (
+                otherShape.id !== shape.id &&
+                otherShape.type === shape.type
+              ) {
+                const width =
+                  shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
+                const height =
+                  shape.type === "img1"
+                    ? 150
+                    : "smartpier2" || "smartpier4"
+                    ? 100
+                    : 50;
 
                 const horizontalSnap =
                   Math.abs(newX - otherShape.x) <= 20 ||
@@ -339,4 +370,3 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 };
 
 export default CanvasComponent;
-
