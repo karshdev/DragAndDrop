@@ -1,12 +1,16 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import { DataContext } from "../context/DataContext";
+import { FaRotate } from "react-icons/fa6";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const CanvasComponent = ({ shapes, setShapes }) => {
   const { zoomLevel } = useContext(DataContext);
   const canvasRef = useRef(null);
   const [draggingShape, setDraggingShape] = useState(null);
   const [selectedShape, setSelectedShape] = useState(null);
+  const [rotatingShape, setRotatingShape] = useState(null);
   const [images, setImages] = useState({});
+  const [rotateIconImage, setRotateIconImage] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
@@ -47,6 +51,16 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         });
       })
       .catch((error) => console.error("Error loading images:", error));
+
+    const iconMarkup = renderToStaticMarkup(<FaRotate />);
+    const blob = new Blob([iconMarkup], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const iconImage = new Image();
+    iconImage.src = url;
+    iconImage.onload = () => {
+      setRotateIconImage(iconImage);
+      URL.revokeObjectURL(url); // Clean up object URL after image has loaded
+    };
   }, []);
 
   const drawShapes = (ctx) => {
@@ -85,17 +99,22 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         drawImage(ctx, images.smartpier4, shape, 100, 100);
       }
       drawMeasurements(ctx, shape);
+      drawRotateIcon(ctx, shape);
 
       if (shape === selectedShape) {
         highlightShape(ctx, shape);
       }
     });
 
-    ctx.restore(); // Restore the state to the original after drawing
+    ctx.restore();
   };
 
   const drawImage = (ctx, image, shape, width, height) => {
-    ctx.drawImage(image, shape.x, shape.y, width, height);
+    ctx.save();
+    ctx.translate(shape.x + width / 2, shape.y + height / 2);
+    ctx.rotate(shape.rotation || 0);
+    ctx.drawImage(image, -width / 2, -height / 2, width, height);
+    ctx.restore();
   };
 
   const drawMeasurements = (ctx, shape) => {
@@ -114,9 +133,32 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       height = 100;
     }
 
+    ctx.save();
+    ctx.translate(shape.x + width / 2, shape.y + height / 2);
+    ctx.rotate(shape.rotation || 0);
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
-    ctx.fillText(`(${width}x${height})`, shape.x, shape.y - 5);
+    ctx.fillText(`(${width}x${height})`, -width / 2, -height / 2 - 5);
+    ctx.restore();
+  };
+
+  const drawRotateIcon = (ctx, shape) => {
+    if (!rotateIconImage) return;
+
+    let width, height;
+    if (shape.type === "img1") {
+      width = 100;
+      height = 150;
+    } else if (shape.type === "img2") {
+      width = 50;
+      height = 50;
+    }
+
+    ctx.save();
+    ctx.translate(shape.x + width / 2, shape.y + height / 2);
+    ctx.rotate(shape.rotation || 0);
+    ctx.drawImage(rotateIconImage, -10, -height / 2 - 25, 20, 20);
+    ctx.restore();
   };
 
   const highlightShape = (ctx, shape) => {
@@ -144,7 +186,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   };
 
   const isClose = (shape1, shape2) => {
-    const distance = 1; // Adjust this value as needed
+    const distance = 1;
 
     const closeX =
       shape1.y === shape2.y &&
@@ -180,38 +222,34 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     if (images.connector && shape1.type === "smartpier1") {
       if (closeX) {
-        // Draw 5 images horizontally
         ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY - 28, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY + 28, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY + 58, 20, 20);
       } else if (closeY) {
-        // Draw 3 images vertically
         ctx.drawImage(images.connector, imgX - 28, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
       }
-    } else if (images.connector && shape1.type === "img2") {
+    } else if (shape1.type === "img2") {
       if (closeX) {
-        // Draw 5 orange circles horizontally
         ctx.fillStyle = "#000";
         ctx.beginPath();
-        ctx.arc(imgX + 10, imgY - 15, 9, 0, 2 * Math.PI); // Draw circle at the top
+        ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI);
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(imgX + 10, imgY + 35, 9, 0, 2 * Math.PI); // Draw circle at the bottom
+        ctx.arc(imgX + 35, imgY + 10, 9, 0, 2 * Math.PI);
         ctx.fill();
       } else if (closeY) {
-        // Draw 3 orange circles vertically
         ctx.fillStyle = "#000";
         ctx.beginPath();
-        ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI); // Draw circle on the left
+        ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI);
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(imgX + 35, imgY + 10, 9, 0, 2 * Math.PI); // Draw circle on the right
+        ctx.arc(imgX + 35, imgY + 10, 9, 0, 2 * Math.PI);
         ctx.fill();
       }
     }
@@ -220,52 +258,75 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const handleMouseDown = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x; // Adjust for zoom level and offset
-    const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y; // Adjust for zoom level and offset
+    const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x;
+    const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y;
 
     const shape = shapes.find((shape) => {
-      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
+
+       const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
       const height =
         shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
+      const rotateIconHit =
+        mouseX >= shape.x + width / 2 - 10 &&
+        mouseX <= shape.x + width / 2 + 10 &&
+        mouseY >= shape.y - 25 &&
+        mouseY <= shape.y - 5;
       return (
-        mouseX >= shape.x &&
-        mouseX <= shape.x + width &&
-        mouseY >= shape.y &&
-        mouseY <= shape.y + height
+        rotateIconHit ||
+        (mouseX >= shape.x &&
+          mouseX <= shape.x + width &&
+          mouseY >= shape.y &&
+          mouseY <= shape.y + height)
       );
     });
 
     if (shape) {
-      setSelectedShape(shape);
-      setDraggingShape({
-        id: shape.id,
-        offsetX: mouseX - shape.x,
-        offsetY: mouseY - shape.y,
-      });
+      const width = shape.type === "img1" ? 100 : 50;
+      const height = shape.type === "img1" ? 150 : 50;
+      const rotateIconHit =
+        mouseX >= shape.x + width / 2 - 10 &&
+        mouseX <= shape.x + width / 2 + 10 &&
+        mouseY >= shape.y - 25 &&
+        mouseY <= shape.y - 5;
+
+      if (rotateIconHit) {
+        setRotatingShape({
+          id: shape.id,
+          startX: mouseX,
+          startY: mouseY,
+          startRotation: shape.rotation || 0,
+        });
+      } else {
+        setSelectedShape(shape);
+        setDraggingShape({
+          id: shape.id,
+          offsetX: mouseX - shape.x,
+          offsetY: mouseY - shape.y,
+        });
+      }
     } else {
       setLongPressTimeout(
         setTimeout(() => {
           setIsPanning(true);
           setPanStart({ x: e.clientX, y: e.clientY });
-        }, 500) // Long press duration (500ms)
+        }, 500)
       );
     }
   };
 
   const handleMouseMove = (e) => {
-    if (draggingShape) {
-      const canvas = canvasRef.current;
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x; // Adjust for zoom level and offset
-      const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y; // Adjust for zoom level and offset
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x;
+    const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y;
 
+    if (draggingShape) {
       setShapes((prevShapes) => {
         return prevShapes.map((shape) => {
           if (shape.id === draggingShape.id) {
             const newX = mouseX - draggingShape.offsetX;
             const newY = mouseY - draggingShape.offsetY;
 
-            // Check for snapping
             let snapX = newX;
             let snapY = newY;
 
@@ -300,7 +361,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                     newX < otherShape.x
                       ? otherShape.x - width
                       : otherShape.x + width;
-                  snapY = otherShape.y; // Align vertically
+                  snapY = otherShape.y;
                 } else if (
                   verticalSnap &&
                   Math.abs(newX - otherShape.x) < width / 2
@@ -309,7 +370,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                     newY < otherShape.y
                       ? otherShape.y - height
                       : otherShape.y + height;
-                  snapX = otherShape.x; // Align horizontally
+                  snapX = otherShape.x;
                 }
               }
             });
@@ -318,6 +379,21 @@ const CanvasComponent = ({ shapes, setShapes }) => {
               ...shape,
               x: snapX,
               y: snapY,
+            };
+          }
+          return shape;
+        });
+      });
+    } else if (rotatingShape) {
+      setShapes((prevShapes) => {
+        return prevShapes.map((shape) => {
+          if (shape.id === rotatingShape.id) {
+            const dx = mouseX - rotatingShape.startX;
+            const dy = mouseY - rotatingShape.startY;
+            const angle = Math.atan2(dy, dx);
+            return {
+              ...shape,
+              rotation: rotatingShape.startRotation + angle,
             };
           }
           return shape;
@@ -337,12 +413,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const handleMouseUp = () => {
     clearTimeout(longPressTimeout);
     setDraggingShape(null);
+    setRotatingShape(null);
     setIsPanning(false);
   };
 
   const handleMouseLeave = () => {
     clearTimeout(longPressTimeout);
     setDraggingShape(null);
+    setRotatingShape(null);
     setIsPanning(false);
   };
 
