@@ -9,15 +9,20 @@ const App = () => {
   const [shapes, setShapes] = useState([]);
 
   const addShape = (type) => {
+    const containerWidth = 800; 
+    const containerHeight = 600; 
+    const shapeWidth = 200; 
+    const shapeHeight = 200; 
+
     setShapes((prevShapes) => [
       ...prevShapes,
       {
         id: prevShapes.length + 1,
         type,
-        x: Math.random() * 500,
-        y: Math.random() * 400,
-        width: 200,
-        height: 200,
+        x: (containerWidth - shapeWidth) / 2,
+        y: (containerHeight - shapeHeight) / 2, 
+        width: shapeWidth,
+        height: shapeHeight,
       },
     ]);
   };

@@ -9,7 +9,6 @@ const Header = ({ setShapes, undo, redo }) => {
   const handleZoomIn = () => {
     setZoomLevel((prevZoomLevel) => Math.min(prevZoomLevel * 1.2, 5));
   };
-
   const handleZoomOut = () => {
     setZoomLevel((prevZoomLevel) => Math.max(prevZoomLevel / 1.2, 0.1));
   };
