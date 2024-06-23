@@ -190,17 +190,35 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     const closeX =
       shape1.y === shape2.y &&
-      (Math.abs(shape1.x - (shape2.x + (shape2.type === "img1" ? 100 : 50))) <=
-        distance ||
-        Math.abs(shape2.x - (shape1.x + (shape1.type === "img1" ? 100 : 50))) <=
-          distance);
+      (Math.abs(
+        shape1.x -
+          (shape2.x + (shape2.type === "img1" ? 100 : "smartpier4" ? 100 : 50))
+      ) <= distance ||
+        Math.abs(
+          shape2.x -
+            (shape1.x +
+              (shape1.type === "img1"
+                ? 100
+                : "smartpier2" || "smartpier4"
+                ? 100
+                : 50))
+        ) <= distance);
 
     const closeY =
       shape1.x === shape2.x &&
-      (Math.abs(shape1.y - (shape2.y + (shape2.type === "img1" ? 150 : 50))) <=
-        distance ||
-        Math.abs(shape2.y - (shape1.y + (shape1.type === "img1" ? 150 : 50))) <=
-          distance);
+      (Math.abs(
+        shape1.y -
+          (shape2.y + (shape2.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+      ) <= distance ||
+        Math.abs(
+          shape2.y -
+            (shape1.y +
+              (shape1.type === "img1"
+                ? 150
+                : "smartpier2" || "smartpier4"
+                ? 100
+                : 50))
+        ) <= distance);
 
     return { closeX, closeY };
   };
@@ -232,26 +250,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
       }
-    } else if (shape1.type === "smartpier1") {
-      if (closeX) {
-        ctx.fillStyle = "#000";
-        ctx.beginPath();
-        ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(imgX + 35, imgY + 10, 9, 0, 2 * Math.PI);
-        ctx.fill();
-      } else if (closeY) {
-        ctx.fillStyle = "#000";
-        ctx.beginPath();
-        ctx.arc(imgX - 15, imgY + 10, 9, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(imgX + 35, imgY + 10, 9, 0, 2 * Math.PI);
-        ctx.fill();
-      }
     }
   };
 
@@ -281,8 +279,9 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     });
 
     if (shape) {
-      const width = shape.type === "img1" ? 100 : 50;
-      const height = shape.type === "img1" ? 150 : 50;
+      const width = shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
+      const height =
+        shape.type === "img1" ? 150 : "smartpier2" || "smartpier4" ? 100 : 50;
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
@@ -335,14 +334,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 otherShape.id !== shape.id &&
                 otherShape.type === shape.type
               ) {
-                const width =
-                  shape.type === "img1" ? 100 : "smartpier4" ? 100 : 50;
-                const height =
-                  shape.type === "img1"
-                    ? 150
-                    : "smartpier2" || "smartpier4"
-                    ? 100
-                    : 50;
+                const shapes = {
+                  smartpier1: { width: 50, height: 50 },
+                  smartpier2: { width: 50, height: 100 },
+                  smartpier4: { width: 100, height: 100 },
+                  img1: { width: 100, height: 150 },
+                };
+                const width = shapes[shape.type].width;
+                const height = shapes[shape.type].height;
 
                 const horizontalSnap =
                   Math.abs(newX - otherShape.x) <= 20 ||
@@ -353,14 +352,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   Math.abs(newY + height - otherShape.y) <= 20 ||
                   Math.abs(newY - otherShape.y - height) <= 20;
 
+                let offset = 10;
+                if (shape.type == "img1") {
+                  offset = 0;
+                }
+
                 if (
                   horizontalSnap &&
                   Math.abs(newY - otherShape.y) < height / 2
                 ) {
                   snapX =
                     newX < otherShape.x
-                      ? otherShape.x - width
-                      : otherShape.x + width;
+                      ? otherShape.x - width + offset
+                      : otherShape.x + width - offset;
                   snapY = otherShape.y;
                 } else if (
                   verticalSnap &&
@@ -368,8 +372,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 ) {
                   snapY =
                     newY < otherShape.y
-                      ? otherShape.y - height
-                      : otherShape.y + height;
+                      ? otherShape.y - height + offset
+                      : otherShape.y + height - offset;
                   snapX = otherShape.x;
                 }
               }
