@@ -110,8 +110,28 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.strokeRect(
           shape.x - 2,
           shape.y - 2,
-          shape.type === "img1" ? 104 : 104,
-          shape.type === "img2" ? 154 : 154
+          shape.type === "img1"
+            ? 104
+            : shape.type === "img2"
+            ? 154
+            : shape.type === "smartpier1"
+            ? 50
+            : shape.type === "smartpier2"
+            ? 50
+            : shape.type === "smartpier4"
+            ? 100
+            : 0,
+          shape.type === "img1"
+            ? 154
+            : shape.type === "img2"
+            ? 154
+            : shape.type === "smartpier1"
+            ? 50
+            : shape.type === "smartpier2"
+            ? 100
+            : shape.type === "smartpier4"
+            ? 100
+            : 0
         );
 
         // Apply yellow shade mask with 20% opacity
@@ -119,8 +139,28 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.fillRect(
           shape.x,
           shape.y,
-          shape.type === "img1" ? 100 : 50, // Adjust width based on shape type
-          shape.type === "img1" ? 150 : 50 // Adjust height based on shape type
+          shape.type === "img1"
+            ? 104
+            : shape.type === "img2"
+            ? 154
+            : shape.type === "smartpier1"
+            ? 50
+            : shape.type === "smartpier2"
+            ? 50
+            : shape.type === "smartpier4"
+            ? 100
+            : 0,
+          shape.type === "img1"
+            ? 154
+            : shape.type === "img2"
+            ? 154
+            : shape.type === "smartpier1"
+            ? 50
+            : shape.type === "smartpier2"
+            ? 100
+            : shape.type === "smartpier4"
+            ? 100
+            : 0
         );
       }
 
