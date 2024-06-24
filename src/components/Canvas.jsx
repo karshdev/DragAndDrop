@@ -4,6 +4,7 @@ import { FaRotate } from "react-icons/fa6";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const CanvasComponent = ({ shapes, setShapes }) => {
+  const [hoveredShape, setHoveredShape] = useState(null);
   const { zoomLevel } = useContext(DataContext);
   const canvasRef = useRef(null);
   const [draggingShape, setDraggingShape] = useState(null);
@@ -97,15 +98,43 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       } else if (shape.type === "smartpier4" && images.smartpier4) {
         drawImage(ctx, images.smartpier4, shape, 100, 100);
       }
+
+      // Draw measurements and rotate icon
       drawMeasurements(ctx, shape);
       drawRotateIcon(ctx, shape);
 
+      // Draw yellow border and shade if shape is hovered
+      if (hoveredShape && hoveredShape.id === shape.id) {
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+          shape.x - 2,
+          shape.y - 2,
+          shape.type === "img1" ? 104 : 104,
+          shape.type === "img2" ? 154 : 154
+        );
+
+        // Apply yellow shade mask with 20% opacity
+        ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
+        ctx.fillRect(
+          shape.x,
+          shape.y,
+          shape.type === "img1" ? 100 : 50, // Adjust width based on shape type
+          shape.type === "img1" ? 150 : 50 // Adjust height based on shape type
+        );
+      }
+
+      // Restore default styles
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
+
+      // Highlight shape if selected
       if (shape === selectedShape) {
         highlightShape(ctx, shape);
       }
     });
 
-    ctx.restore();
+    ctx.restore(); // Restore the saved state
   };
 
   const drawImage = (ctx, image, shape, width, height) => {
@@ -137,7 +166,63 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.rotate(shape.rotation || 0);
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
-    ctx.fillText(`(${width}x${height})`, -width / 2, -height / 2 - 5);
+    let arrowSize = 10;
+    // Draw width measurement on top
+    ctx.beginPath();
+    ctx.moveTo(-width / 2, -height / 2 - 20);
+    ctx.lineTo(width / 2, -height / 2 - 20);
+    ctx.stroke();
+
+    // Draw arrows for width
+    ctx.beginPath();
+    ctx.moveTo(-width / 2, -height / 2 - 20);
+    ctx.lineTo(-width / 2 + arrowSize, -height / 2 - 20 - arrowSize / 2);
+    ctx.lineTo(-width / 2 + arrowSize, -height / 2 - 20 + arrowSize / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(width / 2, -height / 2 - 20);
+    ctx.lineTo(width / 2 - arrowSize, -height / 2 - 20 - arrowSize / 2);
+    ctx.lineTo(width / 2 - arrowSize, -height / 2 - 20 + arrowSize / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Draw width text
+    ctx.fillText(
+      `${width}`,
+      -ctx.measureText(`${width}`).width / 2,
+      -height / 2 - 25
+    );
+
+    // Draw height measurement on the left
+    ctx.beginPath();
+    ctx.moveTo(-width / 2 - 20, -height / 2);
+    ctx.lineTo(-width / 2 - 20, height / 2);
+    ctx.stroke();
+
+    // Draw arrows for height
+    ctx.beginPath();
+    ctx.moveTo(-width / 2 - 20, -height / 2);
+    ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
+    ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-width / 2 - 20, height / 2);
+    ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
+    ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
+    ctx.closePath();
+    ctx.fill();
+
+    // Draw height text
+    ctx.save();
+    ctx.translate(-width / 2 - 25, 0);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`${height}`, -ctx.measureText(`${height}`).width / 2, 5);
+    ctx.restore();
+
     ctx.restore();
   };
 
@@ -257,49 +342,68 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = (e.clientX - rect.left) / zoomLevel - canvasOffset.x;
     const mouseY = (e.clientY - rect.top) / zoomLevel - canvasOffset.y;
-    const shape = [...shapes].reverse().find((shape) => {
-      const width = shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
-      const height = shape.type === "img1" ? 150 : shape.type === "smartpier2" || shape.type === "smartpier4" ? 100 : 50;
+    let foundShape = null;
+
+    // Check if clicked on rotate icon or shape
+    shapes.reverse().some((shape) => {
+      const width =
+        shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
+      const height =
+        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
         mouseY >= shape.y - 25 &&
         mouseY <= shape.y - 5;
-  
-      return (
+
+      if (
         rotateIconHit ||
         (mouseX >= shape.x &&
           mouseX <= shape.x + width &&
           mouseY >= shape.y &&
           mouseY <= shape.y + height)
-      );
+      ) {
+        foundShape = shape;
+        return true; // Stop iteration
+      }
+
+      return false;
     });
-  
-    if (shape) {
-      const width = shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
-      const height = shape.type === "img1" ? 150 : shape.type === "smartpier2" || shape.type === "smartpier4" ? 100 : 50;
+
+    if (foundShape) {
+      const width =
+        foundShape.type === "img1" || foundShape.type === "smartpier4"
+          ? 100
+          : 50;
+      const height =
+        foundShape.type === "img1"
+          ? 150
+          : foundShape.type === "smartpier2"
+          ? 100
+          : 50;
       const rotateIconHit =
-        mouseX >= shape.x + width / 2 - 10 &&
-        mouseX <= shape.x + width / 2 + 10 &&
-        mouseY >= shape.y - 25 &&
-        mouseY <= shape.y - 5;
-  
+        mouseX >= foundShape.x + width / 2 - 10 &&
+        mouseX <= foundShape.x + width / 2 + 10 &&
+        mouseY >= foundShape.y - 25 &&
+        mouseY <= foundShape.y - 5;
+
       if (rotateIconHit) {
         setRotatingShape({
-          id: shape.id,
+          id: foundShape.id,
           startX: mouseX,
           startY: mouseY,
-          startRotation: shape.rotation || 0,
+          startRotation: foundShape.rotation || 0,
         });
       } else {
-        setSelectedShape(shape);
+        setSelectedShape(foundShape);
         setDraggingShape({
-          id: shape.id,
-          offsetX: mouseX - shape.x,
-          offsetY: mouseY - shape.y,
+          id: foundShape.id,
+          offsetX: mouseX - foundShape.x,
+          offsetY: mouseY - foundShape.y,
         });
       }
     } else {
+      // Clear selection and hover effects
       setLongPressTimeout(
         setTimeout(() => {
           setIsPanning(true);
@@ -308,7 +412,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       );
     }
   };
-  
+
   const handleMouseMove = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -431,6 +535,49 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     cursor: isPanning ? "grabbing" : "default",
   };
 
+  useEffect(() => {
+    // Function to handle mouse move events to track hovered shape
+    const handleMouseMove = (event) => {
+      if (!canvasRef.current) return;
+
+      // Calculate mouse position relative to canvas
+      const rect = canvasRef.current.getBoundingClientRect();
+      const mouseX =
+        (event.clientX - rect.left) / zoomLevel - canvasOffset.x / zoomLevel;
+      const mouseY =
+        (event.clientY - rect.top) / zoomLevel - canvasOffset.y / zoomLevel;
+
+      // Check if mouse is over any shape
+      const foundHoveredShape = shapes.find((shape) => {
+        const width =
+          shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
+        const height =
+          shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+
+        return (
+          mouseX >= shape.x &&
+          mouseX <= shape.x + width &&
+          mouseY >= shape.y &&
+          mouseY <= shape.y + height
+        );
+      });
+
+      setHoveredShape(foundHoveredShape);
+    };
+
+    // Add event listeners for mouse move, down, and up
+    const canvas = canvasRef.current;
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mousedown", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseMove);
+
+    // Cleanup event listeners
+    return () => {
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mousedown", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseMove);
+    };
+  }, [shapes, zoomLevel, canvasOffset]);
 
   return (
     <div>
