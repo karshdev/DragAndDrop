@@ -63,6 +63,86 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     // };
   }, []);
 
+  const drawGrid = (ctx, width, height, gridSize) => {
+    ctx.save();
+    ctx.strokeStyle = "#e0e0e0";
+    ctx.lineWidth = 1;
+
+    // Draw vertical lines
+    for (let x = 0; x <= width; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    for (let y = 0; y <= height; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  };
+
+  const renderCanvas = (
+    ctx,
+    canvas,
+    shapes,
+    images,
+    zoomLevel,
+    canvasOffset,
+    hoveredShape,
+    selectedShape
+  ) => {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw grid lines (static background)
+    drawGrid(ctx, canvas.width, canvas.height, 50);
+    drawConnectors(ctx);
+
+    // Draw each shape with zoom applied
+    shapes.forEach((shape) => {
+      const baseWidth =
+        shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
+      const baseHeight =
+        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+      const width = baseWidth * zoomLevel;
+      const height = baseHeight * zoomLevel;
+      const x = shape.x * zoomLevel;
+      const y = shape.y * zoomLevel;
+
+      // Draw shape or image
+      if (shape.type === "img1" && images.img1) {
+        drawImage(ctx, images.img1, { ...shape, x, y }, width, height);
+      } else if (shape.type === "smartpier1" && images.smartpier1) {
+        drawImage(ctx, images.smartpier1, { ...shape, x, y }, width, height);
+      } else if (shape.type === "smartpier2" && images.smartpier2) {
+        drawImage(ctx, images.smartpier2, { ...shape, x, y }, width, height);
+      } else if (shape.type === "smartpier4" && images.smartpier4) {
+        drawImage(ctx, images.smartpier4, { ...shape, x, y }, width, height);
+      }
+
+      // Draw hover effects if applicable
+      if (hoveredShape && hoveredShape.id === shape.id) {
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+        ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
+        ctx.fillRect(x, y, width, height);
+      }
+
+      // Draw measurements
+      drawMeasurements(ctx, { ...shape, x, y, width, height });
+
+      // Draw rotating curved arrows
+      // drawCurvedArrow(ctx, x - width / 2, y - height / 2, 20, Math.PI * 0.5, Math.PI * 0.8, false);
+    });
+  };
+
   const drawShapes = (ctx) => {
     ctx.save(); // Save the current state before applying transformations
     ctx.setTransform(
@@ -75,6 +155,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ); // Apply the zoom level and offset
 
     if (images.bg) {
+      // want to write without getting width and height
+      // the node should not include the background, the bg should be static
       ctx.drawImage(
         images.bg,
         0,
@@ -85,7 +167,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     } else {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
-
     drawConnectors(ctx);
 
     shapes.forEach((shape) => {
@@ -569,10 +650,20 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   };
 
   const canvasStyle = {
-    border: "1px solid #ccc",
     display: "block",
     backgroundColor: "#fff",
     cursor: isPanning ? "grabbing" : "default",
+    zIndex: 1,
+    position: "relative",
+  };
+
+  const backgroundStyle = {
+    position: "absolute",
+    left: "0",
+    top: "0",
+    zIndex: "0",
+    width: "100%",
+    height: "100%",
   };
 
   useEffect(() => {
@@ -619,12 +710,30 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     };
   }, [shapes, zoomLevel, canvasOffset]);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      renderCanvas(
+        ctx,
+        canvas,
+        shapes,
+        images,
+        zoomLevel,
+        canvasOffset,
+        hoveredShape,
+        selectedShape
+      );
+    }
+  }, [shapes, images, zoomLevel, canvasOffset, hoveredShape, selectedShape]);
+
   return (
-    <div>
+    <div className="simulation">
       <canvas
         ref={canvasRef}
-        width={1000}
-        height={610}
+        width={10000}
+        height={1000}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
