@@ -10,6 +10,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const [draggingShape, setDraggingShape] = useState(null);
   const [selectedShape, setSelectedShape] = useState(null);
   const [rotatingShape, setRotatingShape] = useState(null);
+  const [connectedShapes, setConnectedShapes] = useState([]);
   const [images, setImages] = useState({});
   const [rotateIconImage, setRotateIconImage] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
@@ -51,8 +52,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         });
       })
       .catch((error) => console.error("Error loading images:", error));
-
-  
   }, []);
 
   const drawGrid = (ctx, width, height, gridSize) => {
@@ -101,7 +100,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       const baseWidth =
         shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
       const baseHeight =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
       const width = baseWidth * zoomLevel;
       const height = baseHeight * zoomLevel;
       const x = shape.x * zoomLevel;
@@ -389,14 +394,23 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       shape1.y === shape2.y &&
       (Math.abs(
         shape1.x -
-          (shape2.x + (shape2.type === "img1" ? 100 : "smartpier4" ? 100 : 50))
+          (shape2.x +
+            (shape2.type === "img1"
+              ? 100
+              : "smartpier2"
+              ? 100
+              : shape1.type === "smartpier4"
+              ? 100
+              : 50))
       ) <= distance ||
         Math.abs(
           shape2.x -
             (shape1.x +
               (shape1.type === "img1"
                 ? 100
-                : "smartpier2" || "smartpier4"
+                : "smartpier2"
+                ? 100
+                : shape1.type === "smartpier4"
                 ? 100
                 : 50))
         ) <= distance);
@@ -410,11 +424,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         Math.abs(
           shape2.y -
             (shape1.y +
-              (shape1.type === "img1"
-                ? 150
-                : "smartpier2" || "smartpier4"
-                ? 100
-                : 50))
+              (shape1.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
         ) <= distance);
 
     return { closeX, closeY };
@@ -437,12 +447,16 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     if (images.connector && shape1.type === "img1") {
       if (closeX) {
+        // setConnectedShapes([...connectedShapes, shape1]);
+        // console.log(connectedShapes, "conneected shapes");
         ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY - 28, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY + 28, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY + 58, 20, 20);
       } else if (closeY) {
+        // setConnectedShapes([...connectedShapes, shape1]);
+        // console.log(connectedShapes, "conneected shapes");
         ctx.drawImage(images.connector, imgX - 28, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX, imgY, 20, 20);
         ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
@@ -462,7 +476,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       const width =
         shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
       const height =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
@@ -492,6 +512,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         foundShape.type === "img1"
           ? 150
           : foundShape.type === "smartpier2"
+          ? 100
+          : foundShape.type === "smartpier4"
           ? 100
           : 50;
       const rotateIconHit =
@@ -543,10 +565,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             let snapY = newY;
 
             prevShapes.forEach((otherShape) => {
-              if (
-                otherShape.id !== shape.id &&
-                otherShape.type === shape.type
-              ) {
+              if (otherShape.id !== shape.id) {
                 const shapes = {
                   smartpier1: { width: 50, height: 50 },
                   smartpier2: { width: 50, height: 100 },
@@ -555,11 +574,21 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 };
                 const width = shapes[shape.type].width;
                 const height = shapes[shape.type].height;
+                // const otherWidth = shapes[otherShape.type].width;
+                // const otherHeight = shapes[otherShape.type].height;
+                // const doubleWidth =
+                //   otherShape.type == "smartpier4" && shape.type == "smartpier2"
+                //     ? width
+                //     : otherShape.type == "smartpier2" &&
+                //       shape.type == "smartpier4"
+                //     ? otherWidth
+                //     : width;
+                // const doubleHeight = otherHeight;
 
                 const horizontalSnap =
-                  Math.abs(newX - otherShape.x) <= 20 ||
-                  Math.abs(newX + width - otherShape.x) <= 20 ||
-                  Math.abs(newX - otherShape.x - width) <= 20;
+                Math.abs(newX - otherShape.x) <= 20 ||
+                Math.abs(newX + width - otherShape.x) <= 20 ||
+                Math.abs(newX - otherShape.x - width) <= 20;
                 const verticalSnap =
                   Math.abs(newY - otherShape.y) <= 20 ||
                   Math.abs(newY + height - otherShape.y) <= 20 ||
@@ -647,7 +676,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     cursor: isPanning ? "grabbing" : "default",
     zIndex: 1,
     position: "relative",
-    overflow:"hidden"
+    overflow: "hidden",
   };
 
   const backgroundStyle = {
@@ -676,7 +705,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         const width =
           shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
         const height =
-          shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+          shape.type === "img1"
+            ? 150
+            : shape.type === "smartpier2"
+            ? 100
+            : shape.type === "smartpier4"
+            ? 100
+            : 50;
 
         return (
           mouseX >= shape.x &&
