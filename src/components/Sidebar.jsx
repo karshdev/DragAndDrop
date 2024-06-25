@@ -14,8 +14,8 @@ const Sidebar = ({ addShape,saveStateToHistory }) => {
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             <li onClick={() => {addShape("img1")
-saveStateToHistory()
-
+              saveStateToHistory()
+              setSmartPierClicked(false)
             }}>
               <a
                 href="#"
