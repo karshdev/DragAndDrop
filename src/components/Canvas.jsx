@@ -329,7 +329,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.fill();
 
     // Draw width text
-    ctx.fillText(`${width / zoomLevel}`, -10, -height / 2 - 25);
+    ctx.fillText(`${parseInt(width / zoomLevel)}`, -10, -height / 2 - 25);
 
     // Draw height measurement on the left
     ctx.beginPath();
@@ -356,7 +356,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.save();
     ctx.translate(-width / 2 - 25, 0);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText(`${height / zoomLevel}`, -10, 5);
+    ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
     ctx.restore();
 
     ctx.restore();
@@ -450,8 +450,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const y2 = shape2.y + (shape2.type === "img1" ? 75 : 25);
 
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(x1 * zoomLevel, y1 * zoomLevel);
+    ctx.lineTo(x2 * zoomLevel, y2 * zoomLevel);
     ctx.strokeStyle = "black";
     ctx.stroke();
 
@@ -460,15 +460,63 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     if (images.connector && shape1.type === "img1") {
       if (closeX) {
-        ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY - 28, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY + 28, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY + 58, 20, 20);
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel - 58 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel - 28 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel + 28 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel + 58 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
       } else if (closeY) {
-        ctx.drawImage(images.connector, imgX - 28, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 28 * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 28 * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
       }
     }
   };
@@ -759,7 +807,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       <canvas
         ref={canvasRef}
         width={10000}
-        height={3000}
+        height={1000}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
