@@ -2,9 +2,37 @@ import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../context/DataContext";
 import { MdDelete } from "react-icons/md";
 
-const Right = ({ addShape }) => {
-  const { smartPierClicked,setSmartPierClicked } = useContext(DataContext);
+const Right = ({ addShape, shapes, setShapes }) => {
+  const {
+    smartPierClicked,
+    setSmartPierClicked,
+    selectedShape,
+    setSelectedShape,
+    selectedShapeClick,
+    setSelectedShapeClick,
+  } = useContext(DataContext);
   const [onSelectToggle, setOnSelectToggle] = useState(false);
+  const [orientation, setOrientation] = useState(selectedShape?.orientation);
+
+  const handleOrientationChange = (newOrientation) => {
+    setOrientation(newOrientation);
+    const newShapes = shapes.map((shape) => {
+      if (shape.id === selectedShape.id) {
+        return {
+          ...shape,
+          orientation: newOrientation,
+        };
+      }
+      return shape;
+    });
+    setShapes(newShapes);
+  };
+
+  useEffect(() => {
+    if (selectedShapeClick) {
+      setOrientation("Vertical");
+    }
+  }, [selectedShapeClick]);
 
   return (
     <aside
@@ -12,13 +40,26 @@ const Right = ({ addShape }) => {
       className="fixed mt-[80px] border-l top-0 right-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-white border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
       aria-label="Sidebar"
     >
+      {selectedShapeClick && (
+        <div className="text-white p-4">
+          <span>Set orientation for Pier#{selectedShape.id}</span>
+          <select
+            placeholder="Select the orientation"
+            className="p-1 text-black border-none rounded w-full mt-2"
+            onChange={(e) => handleOrientationChange(e.target.value)}
+          >
+            <option value="Horizontal">Horizontal</option>
+            <option value="Vertical">Vertical</option>
+          </select>
+        </div>
+      )}
       {smartPierClicked && (
         <div
           className=" flex flex-col w-full justify-between py-2 px-5 overflow-y-auto bg-white dark:bg-gray-800"
           style={{ height: "calc(100vh - 80px)" }}
         >
           <div className="">
-            <div>
+            <div className="text-white">
               Image : <strong>Smart Pier</strong>
             </div>
             <div className="relative text-left mt-4">
@@ -58,8 +99,10 @@ const Right = ({ addShape }) => {
                   <div className="py-1" role="none">
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier1")
-                        setOnSelectToggle(false)}}
+                      onClick={() => {
+                        addShape("smartpier1");
+                        setOnSelectToggle(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
@@ -69,8 +112,10 @@ const Right = ({ addShape }) => {
                     </a>
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier2") 
-                        setOnSelectToggle(false)}}
+                      onClick={() => {
+                        addShape("smartpier2");
+                        setOnSelectToggle(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
@@ -80,9 +125,9 @@ const Right = ({ addShape }) => {
                     </a>
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier4")
-                        setOnSelectToggle(false)
-
+                      onClick={() => {
+                        addShape("smartpier4");
+                        setOnSelectToggle(false);
                       }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
@@ -132,7 +177,7 @@ const Right = ({ addShape }) => {
                 </button>
               </a>
             </li>
-            <li onClick={() => setSmartPierClicked (true)}>
+            <li onClick={() => setSmartPierClicked(true)}>
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"

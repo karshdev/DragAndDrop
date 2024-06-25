@@ -5,10 +5,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 const CanvasComponent = ({ shapes, setShapes }) => {
   const [hoveredShape, setHoveredShape] = useState(null);
-  const { zoomLevel } = useContext(DataContext);
+  const {
+    zoomLevel,
+    setZoomLevel,
+    selectedShape,
+    setSelectedShape,
+    setSelectedShapeClick,
+  } = useContext(DataContext);
   const canvasRef = useRef(null);
   const [draggingShape, setDraggingShape] = useState(null);
-  const [selectedShape, setSelectedShape] = useState(null);
   const [rotatingShape, setRotatingShape] = useState(null);
   const [images, setImages] = useState({});
   const [rotateIconImage, setRotateIconImage] = useState(null);
@@ -51,8 +56,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         });
       })
       .catch((error) => console.error("Error loading images:", error));
-
-  
   }, []);
 
   const drawGrid = (ctx, width, height, gridSize) => {
@@ -101,7 +104,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       const baseWidth =
         shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
       const baseHeight =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
       const width = baseWidth * zoomLevel;
       const height = baseHeight * zoomLevel;
       const x = shape.x * zoomLevel;
@@ -118,17 +127,26 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         drawImage(ctx, images.smartpier4, { ...shape, x, y }, width, height);
       }
 
+      drawMeasurements(ctx, { ...shape, x, y, width, height });
+      drawRotateIcon(ctx, shape);
       // Draw hover effects if applicable
       if (hoveredShape && hoveredShape.id === shape.id) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
-        ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+        if (shape.orientation === "Vertical") {
+          ctx.strokeRect(x - 25, y + 20, height + 4, width + 4);
+        } else {
+          ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+        }
         ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
-        ctx.fillRect(x, y, width, height);
+        if (shape.orientation === "Vertical") {
+          ctx.fillRect(x - 25, y + 20, height, width);
+        } else {
+          ctx.fillRect(x, y, width, height);
+        }
       }
 
       // Draw measurements
-      drawMeasurements(ctx, { ...shape, x, y, width, height });
 
       // Draw rotating curved arrows
       // drawCurvedArrow(ctx, x - width / 2, y - height / 2, 20, Math.PI * 0.5, Math.PI * 0.8, false);
@@ -160,20 +178,32 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
     drawConnectors(ctx);
-
     shapes.forEach((shape) => {
+      const baseWidth =
+        shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
+      const baseHeight =
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
+      const width = baseWidth * zoomLevel;
+      const height = baseHeight * zoomLevel;
+      const x = shape.x * zoomLevel;
+      const y = shape.y * zoomLevel;
       if (shape.type === "img1" && images.img1) {
-        drawImage(ctx, images.img1, shape, 100, 150);
+        drawImage(ctx, images.img1, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier1" && images.smartpier1) {
-        drawImage(ctx, images.smartpier1, shape, 50, 50);
+        drawImage(ctx, images.smartpier1, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier2" && images.smartpier2) {
-        drawImage(ctx, images.smartpier2, shape, 50, 100);
+        drawImage(ctx, images.smartpier2, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier4" && images.smartpier4) {
-        drawImage(ctx, images.smartpier4, shape, 100, 100);
+        drawImage(ctx, images.smartpier4, { ...shape, x, y }, width, height);
       }
 
-      // Draw measurements and rotate icon
-      drawMeasurements(ctx, shape);
+      drawMeasurements(ctx, { ...shape, x, y, width, height });
       drawRotateIcon(ctx, shape);
 
       // Draw yellow border and shade if shape is hovered
@@ -190,18 +220,24 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             : shape.type === "smartpier1"
             ? 50
             : shape.type === "smartpier2"
-            ? 50
+            ? shape.orientation !== "Vertical"
+              ? 50
+              : 100
             : shape.type === "smartpier4"
             ? 100
             : 0,
           shape.type === "img1"
-            ? 154
+            ? shape.orientation !== "Vertical"
+              ? 154
+              : 104
             : shape.type === "img2"
             ? 154
             : shape.type === "smartpier1"
             ? 50
             : shape.type === "smartpier2"
-            ? 100
+            ? shape.orientation !== "Vertical"
+              ? 100
+              : 50
             : shape.type === "smartpier4"
             ? 100
             : 0
@@ -253,7 +289,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const drawImage = (ctx, image, shape, width, height) => {
     ctx.save();
     ctx.translate(shape.x + width / 2, shape.y + height / 2);
-    ctx.rotate(shape.rotation || 0);
+    ctx.rotate(shape.orientation === "Vertical" ? Math.PI / 2 : 0);
     ctx.drawImage(image, -width / 2, -height / 2, width, height);
     ctx.restore();
   };
@@ -261,17 +297,21 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const drawMeasurements = (ctx, shape) => {
     let width, height;
     if (shape.type === "img1") {
-      width = 100;
-      height = 150;
+      width = 100 * zoomLevel;
+      height = 150 * zoomLevel;
     } else if (shape.type === "smartpier1") {
-      width = 50;
-      height = 50;
+      width = 50 * zoomLevel;
+      height = 50 * zoomLevel;
     } else if (shape.type === "smartpier2") {
-      width = 50;
-      height = 100;
+      width = 50 * zoomLevel;
+      height = 100 * zoomLevel;
     } else if (shape.type === "smartpier4") {
-      width = 100;
-      height = 100;
+      width = 100 * zoomLevel;
+      height = 100 * zoomLevel;
+    }
+
+    if (shape.orientation === "Vertical") {
+      [width, height] = [height, width];
     }
 
     ctx.save();
@@ -282,50 +322,91 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     let arrowSize = 10;
     // Draw width measurement on top
     ctx.beginPath();
-    ctx.moveTo(-width / 2, -height / 2 - 20);
-    ctx.lineTo(width / 2, -height / 2 - 20);
+    ctx.moveTo(
+      -width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+    );
+    ctx.lineTo(
+      width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+    );
     ctx.stroke();
 
     // Draw arrows for width
     ctx.beginPath();
-    ctx.moveTo(-width / 2, -height / 2 - 20);
-    ctx.lineTo(-width / 2 + arrowSize, -height / 2 - 20 - arrowSize / 2);
-    ctx.lineTo(-width / 2 + arrowSize, -height / 2 - 20 + arrowSize / 2);
+    ctx.moveTo(
+      -width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+    );
+    ctx.lineTo(
+      -width / 2 + arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) - arrowSize / 2
+    );
+    ctx.lineTo(
+      -width / 2 + arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) + arrowSize / 2
+    );
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(width / 2, -height / 2 - 20);
-    ctx.lineTo(width / 2 - arrowSize, -height / 2 - 20 - arrowSize / 2);
-    ctx.lineTo(width / 2 - arrowSize, -height / 2 - 20 + arrowSize / 2);
+    ctx.moveTo(
+      width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+    );
+    ctx.lineTo(
+      width / 2 - arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) - arrowSize / 2
+    );
+    ctx.lineTo(
+      width / 2 - arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) + arrowSize / 2
+    );
     ctx.closePath();
     ctx.fill();
 
     // Draw width text
     ctx.fillText(
-      `${width}`,
-      -ctx.measureText(`${width}`).width / 2,
-      -height / 2 - 25
+      `${parseInt(width / zoomLevel)}`,
+      -(shape.orientation === "Vertical" ? 25 : 10),
+      -height / 2 - (shape.orientation === "Vertical" ? 10 : 25)
     );
 
     // Draw height measurement on the left
     ctx.beginPath();
-    ctx.moveTo(-width / 2 - 20, -height / 2);
-    ctx.lineTo(-width / 2 - 20, height / 2);
+    if (shape.orientation !== "Vertical") {
+      ctx.moveTo(-width / 2 - 20, -height / 2);
+      ctx.lineTo(-width / 2 - 20, height / 2);
+    } else {
+      ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+      ctx.lineTo(-width / 2 - 40, height / 2 + 20);
+    }
     ctx.stroke();
 
     // Draw arrows for height
     ctx.beginPath();
-    ctx.moveTo(-width / 2 - 20, -height / 2);
-    ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
-    ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
+    if (shape.orientation !== "Vertical") {
+      ctx.moveTo(-width / 2 - 20, -height / 2);
+      ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
+      ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
+    } else {
+      ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+      ctx.lineTo(-width / 2 - 40 - arrowSize / 2, -height / 2 + arrowSize + 20);
+      ctx.lineTo(-width / 2 - 40 + arrowSize / 2, -height / 2 + arrowSize + 20);
+    }
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(-width / 2 - 20, height / 2);
-    ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
-    ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
+    if (shape.orientation !== "Vertical") {
+      ctx.moveTo(-width / 2 - 20, height / 2);
+      ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
+      ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
+    } else {
+      ctx.moveTo(-width / 2 - 40, height / 2 + 20);
+      ctx.lineTo(-width / 2 - 40 - arrowSize / 2, height / 2 - arrowSize + 20);
+      ctx.lineTo(-width / 2 - 40 + arrowSize / 2, height / 2 - arrowSize + 20);
+    }
     ctx.closePath();
     ctx.fill();
 
@@ -333,9 +414,12 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.save();
     ctx.translate(-width / 2 - 25, 0);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText(`${height}`, -ctx.measureText(`${height}`).width / 2, 5);
+    if (shape.orientation !== "Vertical") {
+      ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
+    } else {
+      ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
+    }
     ctx.restore();
-
     ctx.restore();
   };
 
@@ -427,8 +511,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const y2 = shape2.y + (shape2.type === "img1" ? 75 : 25);
 
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(x1 * zoomLevel, y1 * zoomLevel);
+    ctx.lineTo(x2 * zoomLevel, y2 * zoomLevel);
     ctx.strokeStyle = "black";
     ctx.stroke();
 
@@ -437,15 +521,63 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     if (images.connector && shape1.type === "img1") {
       if (closeX) {
-        ctx.drawImage(images.connector, imgX, imgY - 58, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY - 28, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY + 28, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY + 58, 20, 20);
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel - 58 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel - 28 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel + 28 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel + 58 * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
       } else if (closeY) {
-        ctx.drawImage(images.connector, imgX - 28, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX, imgY, 20, 20);
-        ctx.drawImage(images.connector, imgX + 28, imgY, 20, 20);
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 28 * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 28 * zoomLevel,
+          imgY * zoomLevel,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
       }
     }
   };
@@ -458,11 +590,22 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     let foundShape = null;
 
     // Check if clicked on rotate icon or shape
-    shapes.reverse().some((shape) => {
-      const width =
-        shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
-      const height =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+    shapes.forEach((shape) => {
+      let width, height;
+      if (shape.type === "img1") {
+        width = 100 * zoomLevel;
+        height = 150 * zoomLevel;
+      } else if (shape.type === "smartpier1") {
+        width = 50 * zoomLevel;
+        height = 50 * zoomLevel;
+      } else if (shape.type === "smartpier2") {
+        width = 50 * zoomLevel;
+        height = 100 * zoomLevel;
+      } else if (shape.type === "smartpier4") {
+        width = 100 * zoomLevel;
+        height = 100 * zoomLevel;
+      }
+
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
@@ -509,6 +652,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         });
       } else {
         setSelectedShape(foundShape);
+        setSelectedShapeClick(true);
         setDraggingShape({
           id: foundShape.id,
           offsetX: mouseX - foundShape.x,
@@ -517,6 +661,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       }
     } else {
       // Clear selection and hover effects
+      setSelectedShapeClick(false);
       setLongPressTimeout(
         setTimeout(() => {
           setIsPanning(true);
@@ -647,7 +792,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     cursor: isPanning ? "grabbing" : "default",
     zIndex: 1,
     position: "relative",
-    overflow:"hidden"
+    overflow: "hidden",
   };
 
   const backgroundStyle = {
@@ -721,12 +866,31 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     }
   }, [shapes, images, zoomLevel, canvasOffset, hoveredShape, selectedShape]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey) {
+        if (e.key === "+") {
+          e.preventDefault();
+          setZoomLevel((prevZoom) => Math.min(prevZoom * 1.1, 3));
+        } else if (e.key === "-") {
+          e.preventDefault();
+          setZoomLevel((prevZoom) => Math.max(prevZoom / 1.1, 0.5));
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div className="simulation">
       <canvas
         ref={canvasRef}
-        width={1000}
-        height={680}
+        width={10000}
+        height={1000}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

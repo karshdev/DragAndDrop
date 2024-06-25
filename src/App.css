@@ -1,0 +1,12 @@
+#app {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.simulation {
+    position: relative;
+    width: auto;
+    height: 100%;
+    overflow: hidden;
+    background-color: white;
+}
