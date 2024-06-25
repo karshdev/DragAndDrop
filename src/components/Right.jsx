@@ -3,7 +3,7 @@ import { DataContext } from "../context/DataContext";
 import { MdDelete } from "react-icons/md";
 
 const Right = ({ addShape }) => {
-  const { smartPierClicked } = useContext(DataContext);
+  const { smartPierClicked,setSmartPierClicked } = useContext(DataContext);
   const [onSelectToggle, setOnSelectToggle] = useState(false);
 
   return (
@@ -112,7 +112,7 @@ const Right = ({ addShape }) => {
       {!smartPierClicked && (
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
-            <li onClick={() => smartPierClicked(true)}>
+            <li onClick={() => addShape("img1")}>
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
@@ -132,7 +132,7 @@ const Right = ({ addShape }) => {
                 </button>
               </a>
             </li>
-            <li onClick={() => addShape("img2")}>
+            <li onClick={() => setSmartPierClicked (true)}>
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
