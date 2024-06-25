@@ -109,7 +109,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       const baseWidth =
         shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
       const baseHeight =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
       const width = baseWidth * zoomLevel;
       const height = baseHeight * zoomLevel;
       const x = shape.x * zoomLevel;
@@ -126,6 +132,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         drawImage(ctx, images.smartpier4, { ...shape, x, y }, width, height);
       }
 
+      drawMeasurements(ctx, { ...shape, x, y, width, height });
+      drawRotateIcon(ctx, shape);
       // Draw hover effects if applicable
       if (hoveredShape && hoveredShape.id === shape.id) {
         ctx.strokeStyle = "yellow";
@@ -136,7 +144,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       }
 
       // Draw measurements
-      drawMeasurements(ctx, { ...shape, x, y, width, height });
 
       // Draw rotating curved arrows
       // drawCurvedArrow(ctx, x - width / 2, y - height / 2, 20, Math.PI * 0.5, Math.PI * 0.8, false);
@@ -168,20 +175,32 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
     drawConnectors(ctx);
-
     shapes.forEach((shape) => {
+      const baseWidth =
+        shape.type === "img1" ? 100 : shape.type === "smartpier4" ? 100 : 50;
+      const baseHeight =
+        shape.type === "img1"
+          ? 150
+          : shape.type === "smartpier2"
+          ? 100
+          : shape.type === "smartpier4"
+          ? 100
+          : 50;
+      const width = baseWidth * zoomLevel;
+      const height = baseHeight * zoomLevel;
+      const x = shape.x * zoomLevel;
+      const y = shape.y * zoomLevel;
       if (shape.type === "img1" && images.img1) {
-        drawImage(ctx, images.img1, shape, 100, 150);
+        drawImage(ctx, images.img1, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier1" && images.smartpier1) {
-        drawImage(ctx, images.smartpier1, shape, 50, 50);
+        drawImage(ctx, images.smartpier1, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier2" && images.smartpier2) {
-        drawImage(ctx, images.smartpier2, shape, 50, 100);
+        drawImage(ctx, images.smartpier2, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier4" && images.smartpier4) {
-        drawImage(ctx, images.smartpier4, shape, 100, 100);
+        drawImage(ctx, images.smartpier4, { ...shape, x, y }, width, height);
       }
 
-      // Draw measurements and rotate icon
-      drawMeasurements(ctx, shape);
+      drawMeasurements(ctx, { ...shape, x, y, width, height });
       drawRotateIcon(ctx, shape);
 
       // Draw yellow border and shade if shape is hovered
@@ -269,17 +288,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const drawMeasurements = (ctx, shape) => {
     let width, height;
     if (shape.type === "img1") {
-      width = 100;
-      height = 150;
+      width = 100 * zoomLevel;
+      height = 150 * zoomLevel;
     } else if (shape.type === "smartpier1") {
-      width = 50;
-      height = 50;
+      width = 50 * zoomLevel;
+      height = 50 * zoomLevel;
     } else if (shape.type === "smartpier2") {
-      width = 50;
-      height = 100;
+      width = 50 * zoomLevel;
+      height = 100 * zoomLevel;
     } else if (shape.type === "smartpier4") {
-      width = 100;
-      height = 100;
+      width = 100 * zoomLevel;
+      height = 100 * zoomLevel;
     }
 
     ctx.save();
@@ -310,11 +329,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.fill();
 
     // Draw width text
-    ctx.fillText(
-      `${width}`,
-      -ctx.measureText(`${width}`).width / 2,
-      -height / 2 - 25
-    );
+    ctx.fillText(`${width / zoomLevel}`, -10, -height / 2 - 25);
 
     // Draw height measurement on the left
     ctx.beginPath();
@@ -341,7 +356,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.save();
     ctx.translate(-width / 2 - 25, 0);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText(`${height}`, -ctx.measureText(`${height}`).width / 2, 5);
+    ctx.fillText(`${height / zoomLevel}`, -10, 5);
     ctx.restore();
 
     ctx.restore();
@@ -466,11 +481,22 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     let foundShape = null;
 
     // Check if clicked on rotate icon or shape
-    shapes.reverse().some((shape) => {
-      const width =
-        shape.type === "img1" || shape.type === "smartpier4" ? 100 : 50;
-      const height =
-        shape.type === "img1" ? 150 : shape.type === "smartpier2" ? 100 : 50;
+    shapes.forEach((shape) => {
+      let width, height;
+      if (shape.type === "img1") {
+        width = 100 * zoomLevel;
+        height = 150 * zoomLevel;
+      } else if (shape.type === "smartpier1") {
+        width = 50 * zoomLevel;
+        height = 50 * zoomLevel;
+      } else if (shape.type === "smartpier2") {
+        width = 50 * zoomLevel;
+        height = 100 * zoomLevel;
+      } else if (shape.type === "smartpier4") {
+        width = 100 * zoomLevel;
+        height = 100 * zoomLevel;
+      }
+
       const rotateIconHit =
         mouseX >= shape.x + width / 2 - 10 &&
         mouseX <= shape.x + width / 2 + 10 &&
@@ -733,7 +759,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       <canvas
         ref={canvasRef}
         width={10000}
-        height={1000}
+        height={3000}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
