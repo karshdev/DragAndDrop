@@ -52,15 +52,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       })
       .catch((error) => console.error("Error loading images:", error));
 
-    // const iconMarkup = renderToStaticMarkup(<FaRotate />);
-    // const blob = new Blob([iconMarkup], { type: "image/svg+xml" });
-    // const url = URL.createObjectURL(blob);
-    // const iconImage = new Image();
-    // iconImage.src = url;
-    // iconImage.onload = () => {
-    //   setRotateIconImage(iconImage);
-    //   URL.revokeObjectURL(url); // Clean up object URL after image has loaded
-    // };
+  
   }, []);
 
   const drawGrid = (ctx, width, height, gridSize) => {
@@ -655,6 +647,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     cursor: isPanning ? "grabbing" : "default",
     zIndex: 1,
     position: "relative",
+    overflow:"hidden"
   };
 
   const backgroundStyle = {
@@ -732,8 +725,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     <div className="simulation">
       <canvas
         ref={canvasRef}
-        width={10000}
-        height={1000}
+        width={1000}
+        height={680}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
