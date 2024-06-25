@@ -58,7 +58,7 @@ const App = () => {
         <Header setShapes={setShapes} undo={undo} />
         <Sidebar addShape={addShape} saveStateToHistory={saveStateToHistory} />
         <DragImage shapes={shapes} setShapes={setShapes} />
-        <Right addShape={addShape} />
+        <Right addShape={addShape} shapes={shapes} setShapes={setShapes} />
       </div>
     </>
   );
