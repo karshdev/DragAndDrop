@@ -512,7 +512,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   };
 
   const drawConnector = (ctx, shape1, shape2, closeX, closeY) => {
-    const x1 = shape1.x;
+    const x1 = shape1.x + (shape1.type === "img1" ? 50 : 25);
     const y1 = shape1.y + (shape1.type === "img1" ? 75 : 25);
     const x2 = shape2.x + (shape2.type === "img1" ? 50 : 25);
     const y2 = shape2.y + (shape2.type === "img1" ? 75 : 25);
