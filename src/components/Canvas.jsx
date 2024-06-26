@@ -134,15 +134,30 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         if (shape.orientation === "Vertical") {
-          ctx.strokeRect(x - 25, y + 20, height + 4, width + 4);
+          ctx.strokeRect(
+            x - 25 + canvasOffset.x,
+            y + 20 + canvasOffset.y,
+            height + 4,
+            width + 4
+          );
         } else {
-          ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+          ctx.strokeRect(
+            x - 2 + canvasOffset.x,
+            y - 2 + canvasOffset.y,
+            width + 4,
+            height + 4
+          );
         }
         ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
         if (shape.orientation === "Vertical") {
-          ctx.fillRect(x - 25, y + 20, height, width);
+          ctx.fillRect(
+            x - 25 + canvasOffset.x,
+            y + 20 + canvasOffset.y,
+            height,
+            width
+          );
         } else {
-          ctx.fillRect(x, y, width, height);
+          ctx.fillRect(x + canvasOffset.x, y + canvasOffset.y, width, height);
         }
       }
 
@@ -164,19 +179,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       canvasOffset.y
     ); // Apply the zoom level and offset
 
-    if (images.bg) {
-      // want to write without getting width and height
-      // the node should not include the background, the bg should be static
-      ctx.drawImage(
-        images.bg,
-        0,
-        0,
-        canvasRef.current.width / zoomLevel,
-        canvasRef.current.height / zoomLevel
-      );
-    } else {
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    }
     drawConnectors(ctx);
     shapes.forEach((shape) => {
       const baseWidth =
@@ -191,8 +193,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
           : 50;
       const width = baseWidth * zoomLevel;
       const height = baseHeight * zoomLevel;
-      const x = shape.x * zoomLevel;
-      const y = shape.y * zoomLevel;
+      const x = shape.x * zoomLevel + canvasOffset.x;
+      const y = shape.y * zoomLevel + canvasOffset.y;
       if (shape.type === "img1" && images.img1) {
         drawImage(ctx, images.img1, { ...shape, x, y }, width, height);
       } else if (shape.type === "smartpier1" && images.smartpier1) {
@@ -204,15 +206,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       }
 
       drawMeasurements(ctx, { ...shape, x, y, width, height });
-      drawRotateIcon(ctx, shape);
 
       // Draw yellow border and shade if shape is hovered
       if (hoveredShape && hoveredShape.id === shape.id) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         ctx.strokeRect(
-          shape.x - 2,
-          shape.y - 2,
+          shape.x - 2 + canvasOffset.x,
+          shape.y - 2 + canvasOffset.y,
           shape.type === "img1"
             ? 104
             : shape.type === "img2"
@@ -246,8 +247,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         // Apply yellow shade mask with 20% opacity
         ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
         ctx.fillRect(
-          shape.x,
-          shape.y,
+          shape.x + canvasOffset.x,
+          shape.y + canvasOffset.y,
           shape.type === "img1"
             ? 104
             : shape.type === "img2"
@@ -288,7 +289,10 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
   const drawImage = (ctx, image, shape, width, height) => {
     ctx.save();
-    ctx.translate(shape.x + width / 2, shape.y + height / 2);
+    ctx.translate(
+      shape.x + width / 2 + canvasOffset.x,
+      shape.y + height / 2 + canvasOffset.y
+    );
     ctx.rotate(shape.orientation === "Vertical" ? Math.PI / 2 : 0);
     ctx.drawImage(image, -width / 2, -height / 2, width, height);
     ctx.restore();
@@ -315,7 +319,10 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     }
 
     ctx.save();
-    ctx.translate(shape.x + width / 2, shape.y + height / 2);
+    ctx.translate(
+      shape.x + width / 2 + canvasOffset.x,
+      shape.y + height / 2 + canvasOffset.y
+    );
     ctx.rotate(shape.rotation || 0);
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
@@ -446,8 +453,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.strokeStyle = "red";
     ctx.lineWidth = 2;
     ctx.strokeRect(
-      shape.x - 2,
-      shape.y - 2,
+      shape.x - 2 + canvasOffset.x,
+      shape.y - 2 + canvasOffset.y,
       shape.type === "img1" ? 104 : 54,
       shape.type === "img2" ? 154 : 54
     );
@@ -505,76 +512,88 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   };
 
   const drawConnector = (ctx, shape1, shape2, closeX, closeY) => {
-    const x1 = shape1.x + (shape1.type === "img1" ? 50 : 25);
+    const x1 = shape1.x;
     const y1 = shape1.y + (shape1.type === "img1" ? 75 : 25);
     const x2 = shape2.x + (shape2.type === "img1" ? 50 : 25);
     const y2 = shape2.y + (shape2.type === "img1" ? 75 : 25);
 
     ctx.beginPath();
-    ctx.moveTo(x1 * zoomLevel, y1 * zoomLevel);
-    ctx.lineTo(x2 * zoomLevel, y2 * zoomLevel);
+    ctx.moveTo(
+      (x1 + canvasOffset.x) * zoomLevel,
+      (y1 + canvasOffset.y) * zoomLevel
+    );
+    ctx.lineTo(
+      (x2 + canvasOffset.x) * zoomLevel,
+      (y2 + canvasOffset.y) * zoomLevel
+    );
     ctx.strokeStyle = "black";
     ctx.stroke();
 
     const imgX = (x1 + x2) / 2 - 10;
     const imgY = (y1 + y2) / 2 - 10;
 
+    if (
+      shape1.orientation === "Vertical" &&
+      shape2.orientation === "Vertical"
+    ) {
+    }
+
     if (images.connector && shape1.type === "img1") {
       if (closeX) {
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel - 58 * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - 58 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel - 28 * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - 28 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel + 28 * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + 28 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel + 58 * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + 58 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
       } else if (closeY) {
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel - 28 * zoomLevel,
-          imgY * zoomLevel,
+          imgX * zoomLevel - 28 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel,
-          imgY * zoomLevel,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel + 28 * zoomLevel,
-          imgY * zoomLevel,
+          imgX * zoomLevel + 28 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
@@ -660,14 +679,12 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         });
       }
     } else {
-      // Clear selection and hover effects
+      setSelectedShape(null);
       setSelectedShapeClick(false);
-      setLongPressTimeout(
-        setTimeout(() => {
-          setIsPanning(true);
-          setPanStart({ x: e.clientX, y: e.clientY });
-        }, 500)
-      );
+      setRotatingShape(null);
+      setDraggingShape(null);
+      setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
     }
   };
 
