@@ -476,6 +476,47 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const isClose = (shape1, shape2) => {
     const distance = 1;
 
+    if (
+      shape1.orientation === "Vertical" &&
+      shape2.orientation === "Vertical"
+    ) {
+      const closeX =
+        shape1.y === shape2.y &&
+        (Math.abs(
+          shape1.x -
+            (shape2.x +
+              (shape2.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+        ) <= distance ||
+          Math.abs(
+            shape2.x -
+              (shape1.x +
+                (shape1.type === "img1"
+                  ? 150
+                  : "smartpier2" || "smartpier4"
+                  ? 100
+                  : 50))
+          ) <= distance);
+
+      const closeY =
+        shape1.x === shape2.x &&
+        (Math.abs(
+          shape1.y -
+            (shape2.y +
+              (shape2.type === "img1" ? 100 : "smartpier4" ? 100 : 50))
+        ) <= distance ||
+          Math.abs(
+            shape2.y -
+              (shape1.y +
+                (shape1.type === "img1"
+                  ? 100
+                  : "smartpier2" || "smartpier4"
+                  ? 100
+                  : 50))
+          ) <= distance);
+
+      return { closeX, closeY };
+    }
+
     const closeX =
       shape1.y === shape2.y &&
       (Math.abs(
@@ -536,6 +577,68 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       shape1.orientation === "Vertical" &&
       shape2.orientation === "Vertical"
     ) {
+      if (images.connector && shape1.type === "img1") {
+        if (closeX) {
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel - 28 * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + 28 * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+        } else if (closeY) {
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel - 58 * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel - 28 * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + 28 * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+          ctx.drawImage(
+            images.connector,
+            imgX * zoomLevel + 58 * zoomLevel + canvasOffset.x,
+            imgY * zoomLevel + canvasOffset.y,
+            20 * zoomLevel,
+            20 * zoomLevel
+          );
+        }
+      }
+      return;
     }
 
     if (images.connector && shape1.type === "img1") {
