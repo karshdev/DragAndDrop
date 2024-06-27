@@ -12,16 +12,20 @@ const Right = ({ addShape, shapes, setShapes }) => {
     setSelectedShapeClick,
   } = useContext(DataContext);
   const [onSelectToggle, setOnSelectToggle] = useState(false);
-  const [orientation, setOrientation] = useState(selectedShape?.orientation);
+  const [orientation, setOrientation] = useState(
+    selectedShape?.orientation ?? "Horizontal"
+  );
 
   const handleOrientationChange = (newOrientation) => {
-    setOrientation(newOrientation);
     const newShapes = shapes.map((shape) => {
       if (shape.id === selectedShape.id) {
-        return {
+        const shapeFound = {
           ...shape,
           orientation: newOrientation,
         };
+
+        setOrientation(shapeFound.orientation);
+        return shapeFound;
       }
       return shape;
     });
@@ -29,10 +33,8 @@ const Right = ({ addShape, shapes, setShapes }) => {
   };
 
   useEffect(() => {
-    if (selectedShapeClick) {
-      setOrientation("Vertical");
-    }
-  }, [selectedShapeClick]);
+    setOrientation(selectedShape?.orientation ?? "Horizontal");
+  }, [selectedShape]);
 
   return (
     <aside
@@ -45,6 +47,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
           <span>Set orientation for Pier#{selectedShape.id}</span>
           <select
             placeholder="Select the orientation"
+            value={orientation}
             className="p-1 text-black border-none rounded w-full mt-2"
             onChange={(e) => handleOrientationChange(e.target.value)}
           >
