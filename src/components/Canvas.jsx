@@ -131,7 +131,10 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       drawMeasurements(ctx, { ...shape, x, y, width, height });
       drawRotateIcon(ctx, shape);
       // Draw hover effects if applicable
-      if (hoveredShape && hoveredShape.id === shape.id) {
+      if (
+        (hoveredShape && hoveredShape.id === shape.id) ||
+        (selectedShape && selectedShape.id === shape.id)
+      ) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
         if (shape.orientation === "Horizontal") {
