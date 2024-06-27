@@ -34,6 +34,7 @@ const App = () => {
         y: centerY,
         width: shapeWidth,
         height: shapeHeight,
+        orientation: "Vertical",
       },
     ]);
   };

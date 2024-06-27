@@ -134,7 +134,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       if (hoveredShape && hoveredShape.id === shape.id) {
         ctx.strokeStyle = "yellow";
         ctx.lineWidth = 2;
-        if (shape.orientation === "Vertical") {
+        if (shape.orientation === "Horizontal") {
           ctx.strokeRect(
             x - 25 + canvasOffset.x,
             y + 20 + canvasOffset.y,
@@ -150,7 +150,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
           );
         }
         ctx.fillStyle = "rgba(255, 255, 0, 0.2)";
-        if (shape.orientation === "Vertical") {
+        if (shape.orientation === "Horizontal") {
           ctx.fillRect(
             x - 25 + canvasOffset.x,
             y + 20 + canvasOffset.y,
@@ -222,14 +222,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             : shape.type === "smartpier1"
             ? 50
             : shape.type === "smartpier2"
-            ? shape.orientation !== "Vertical"
+            ? shape.orientation !== "Horizontal"
               ? 50
               : 100
             : shape.type === "smartpier4"
             ? 100
             : 0,
           shape.type === "img1"
-            ? shape.orientation !== "Vertical"
+            ? shape.orientation !== "Horizontal"
               ? 154
               : 104
             : shape.type === "img2"
@@ -237,7 +237,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             : shape.type === "smartpier1"
             ? 50
             : shape.type === "smartpier2"
-            ? shape.orientation !== "Vertical"
+            ? shape.orientation !== "Horizontal"
               ? 100
               : 50
             : shape.type === "smartpier4"
@@ -294,7 +294,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       shape.x + width / 2 + canvasOffset.x,
       shape.y + height / 2 + canvasOffset.y
     );
-    ctx.rotate(shape.orientation === "Vertical" ? Math.PI / 2 : 0);
+    ctx.rotate(shape.orientation === "Horizontal" ? Math.PI / 2 : 0);
     ctx.drawImage(image, -width / 2, -height / 2, width, height);
     ctx.restore();
   };
@@ -315,7 +315,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       height = 100 * zoomLevel;
     }
 
-    if (shape.orientation === "Vertical") {
+    if (shape.orientation === "Horizontal") {
       [width, height] = [height, width];
     }
 
@@ -331,44 +331,52 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     // Draw width measurement on top
     ctx.beginPath();
     ctx.moveTo(
-      -width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+      -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
     );
     ctx.lineTo(
-      width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+      width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
     );
     ctx.stroke();
 
     // Draw arrows for width
     ctx.beginPath();
     ctx.moveTo(
-      -width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+      -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
     );
     ctx.lineTo(
-      -width / 2 + arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) - arrowSize / 2
+      -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 -
+        (shape.orientation === "Horizontal" ? 0 : 20) -
+        arrowSize / 2
     );
     ctx.lineTo(
-      -width / 2 + arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) + arrowSize / 2
+      -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 -
+        (shape.orientation === "Horizontal" ? 0 : 20) +
+        arrowSize / 2
     );
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
     ctx.moveTo(
-      width / 2 - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20)
+      width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
     );
     ctx.lineTo(
-      width / 2 - arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) - arrowSize / 2
+      width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 -
+        (shape.orientation === "Horizontal" ? 0 : 20) -
+        arrowSize / 2
     );
     ctx.lineTo(
-      width / 2 - arrowSize - (shape.orientation === "Vertical" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Vertical" ? 0 : 20) + arrowSize / 2
+      width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+      -height / 2 -
+        (shape.orientation === "Horizontal" ? 0 : 20) +
+        arrowSize / 2
     );
     ctx.closePath();
     ctx.fill();
@@ -376,13 +384,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     // Draw width text
     ctx.fillText(
       `${parseInt(width / zoomLevel)}`,
-      -(shape.orientation === "Vertical" ? 25 : 10),
-      -height / 2 - (shape.orientation === "Vertical" ? 10 : 25)
+      -(shape.orientation === "Horizontal" ? 25 : 10),
+      -height / 2 - (shape.orientation === "Horizontal" ? 10 : 25)
     );
 
     // Draw height measurement on the left
     ctx.beginPath();
-    if (shape.orientation !== "Vertical") {
+    if (shape.orientation !== "Horizontal") {
       ctx.moveTo(-width / 2 - 20, -height / 2);
       ctx.lineTo(-width / 2 - 20, height / 2);
     } else {
@@ -393,7 +401,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     // Draw arrows for height
     ctx.beginPath();
-    if (shape.orientation !== "Vertical") {
+    if (shape.orientation !== "Horizontal") {
       ctx.moveTo(-width / 2 - 20, -height / 2);
       ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
       ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
@@ -406,7 +414,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.fill();
 
     ctx.beginPath();
-    if (shape.orientation !== "Vertical") {
+    if (shape.orientation !== "Horizontal") {
       ctx.moveTo(-width / 2 - 20, height / 2);
       ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
       ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
@@ -422,7 +430,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.save();
     ctx.translate(-width / 2 - 25, 0);
     ctx.rotate(-Math.PI / 2);
-    if (shape.orientation !== "Vertical") {
+    if (shape.orientation !== "Horizontal") {
       ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
     } else {
       ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
@@ -478,8 +486,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const distance = 1;
 
     if (
-      shape1.orientation === "Vertical" &&
-      shape2.orientation === "Vertical"
+      shape1.orientation === "Horizontal" &&
+      shape2.orientation === "Horizontal"
     ) {
       const closeX =
         shape1.y === shape2.y &&
@@ -580,8 +588,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     const imgY = (y1 + y2) / 2 - 10;
 
     if (
-      shape1.orientation === "Vertical" &&
-      shape2.orientation === "Vertical"
+      shape1.orientation === "Horizontal" &&
+      shape2.orientation === "Horizontal"
     ) {
       if (images.connector && shape1.type === "img1") {
         if (closeX) {
@@ -837,9 +845,9 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 // const doubleHeight = otherHeight;
 
                 const horizontalSnap =
-                Math.abs(newX - otherShape.x) <= 20 ||
-                Math.abs(newX + width - otherShape.x) <= 20 ||
-                Math.abs(newX - otherShape.x - width) <= 20;
+                  Math.abs(newX - otherShape.x) <= 20 ||
+                  Math.abs(newX + width - otherShape.x) <= 20 ||
+                  Math.abs(newX - otherShape.x - width) <= 20;
                 const verticalSnap =
                   Math.abs(newY - otherShape.y) <= 20 ||
                   Math.abs(newY + height - otherShape.y) <= 20 ||
@@ -849,7 +857,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 if (shape.type == "img1") {
                   offset = 0;
                 }
-                if (shape.orientation !== "Vertical") {
+                if (shape.orientation !== "Horizontal") {
                   if (
                     horizontalSnap &&
                     Math.abs(newY - otherShape.y) < height / 2

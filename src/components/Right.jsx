@@ -53,8 +53,8 @@ const Right = ({ addShape, shapes, setShapes }) => {
             className="p-1 text-black border-none rounded w-full mt-2"
             onChange={(e) => handleOrientationChange(e.target.value)}
           >
-            <option value="Horizontal">Horizontal</option>
             <option value="Vertical">Vertical</option>
+            <option value="Horizontal">Horizontal</option>
           </select>
         </div>
       )}
