@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { DataContext } from "../context/DataContext";
 
-const Sidebar = ({ addShape,saveStateToHistory }) => {
+const Sidebar = ({ addShape, saveStateToHistory }) => {
   const { setSmartPierClicked } = useContext(DataContext);
 
   return (
@@ -13,10 +13,13 @@ const Sidebar = ({ addShape,saveStateToHistory }) => {
       >
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
-            <li onClick={() => {addShape("img1")
-              saveStateToHistory()
-              setSmartPierClicked(false)
-            }}>
+            <li
+              onClick={() => {
+                addShape("img1");
+                saveStateToHistory();
+                setSmartPierClicked(false);
+              }}
+            >
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
@@ -36,10 +39,12 @@ const Sidebar = ({ addShape,saveStateToHistory }) => {
                 </button>
               </a>
             </li>
-            <li onClick={() =>{ setSmartPierClicked(true)
-saveStateToHistory()
-
-            }}>
+            <li
+              onClick={() => {
+                setSmartPierClicked(true);
+                saveStateToHistory();
+              }}
+            >
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
@@ -66,4 +71,3 @@ saveStateToHistory()
 };
 
 export default Sidebar;
-

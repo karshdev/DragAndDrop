@@ -2,10 +2,14 @@ import React, { useContext, useState } from "react";
 import { TbArrowBackUp } from "react-icons/tb";
 import { CiZoomIn, CiZoomOut } from "react-icons/ci";
 import { DataContext } from "../context/DataContext";
+import { useTranslation } from "react-i18next";
+import { IoLanguageOutline } from "react-icons/io5";
 
 const Header = ({ setShapes, undo }) => {
-  const { setZoomLevel } = useContext(DataContext);
+  const { t } = useTranslation();
+  const { setZoomLevel, changeLanguage } = useContext(DataContext);
   const [showPopup, setShowPopup] = useState(false);
+  const [isLanguageToggle, setIsLanguageToggle] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,7 +22,16 @@ const Header = ({ setShapes, undo }) => {
   });
   const states = ["São Paulo", "Rio de Janeiro", "Minas Gerais"];
   const citiesByState = [
-"São Paulo City", "Campinas", "Santos","Rio de Janeiro City", "Niterói", "Nova Iguaçu","Belo Horizonte", "Uberlândia", "Contagem" ]
+    "São Paulo City",
+    "Campinas",
+    "Santos",
+    "Rio de Janeiro City",
+    "Niterói",
+    "Nova Iguaçu",
+    "Belo Horizonte",
+    "Uberlândia",
+    "Contagem",
+  ];
   const handleZoomIn = () => {
     setZoomLevel((prevZoomLevel) => Math.min(prevZoomLevel * 1.2, 5));
   };
@@ -53,14 +66,16 @@ const Header = ({ setShapes, undo }) => {
           <div className="flex px-4">
             <div className="flex flex-col items-center px-2">
               <TbArrowBackUp className="text-2xl" onClick={undo} />
-              <span className="flex flex-col items-center px-2">Undo</span>
+              <span className="flex flex-col items-center px-2">
+                {t(`undo`)}
+              </span>
             </div>
           </div>
           <button
             onClick={() => setShapes([])}
             className="rounded border border-slate-400 hover:bg-gray-200 px-2"
           >
-            Start Over
+            {t(`startOver`)}
           </button>
         </div>
         <div className="flex pl-2">
@@ -71,7 +86,7 @@ const Header = ({ setShapes, undo }) => {
             >
               <CiZoomIn className="text-2xl " />
               <span className="flex flex-col items-center px-2 text-sm max-w-max">
-                Zoom In
+                {t(`zoomIn`)}
               </span>
             </div>
             <div
@@ -80,7 +95,7 @@ const Header = ({ setShapes, undo }) => {
             >
               <CiZoomOut className="text-2xl " />
               <span className="flex flex-col items-center text-sm max-w-max">
-                Zoom Out
+                {t(`zoomOut`)}
               </span>
             </div>
           </div>
@@ -88,8 +103,61 @@ const Header = ({ setShapes, undo }) => {
             onClick={togglePopup}
             className="rounded border bg-sky-600 hover:bg-sky-300 px-2 text-white mx-4 max-w-max"
           >
-            Request Quotes
+            {t(`requestQuotes`)}
           </button>
+          <div className="relative text-left flex items-center">
+            <div className="w-full">
+              <button
+                onClick={() => setIsLanguageToggle(!isLanguageToggle)}
+                type="button"
+                className="flex w-full justify-between items-center gap-x-1.5 rounded-md bg-white px-3 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+              >
+                <IoLanguageOutline />
+              </button>
+            </div>
+
+            {isLanguageToggle && (
+              <div
+                className="absolute right-0 z-[1000] mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+                tabIndex="-1"
+              >
+                <div className="py-1" role="none">
+                  <a
+                    href="#"
+                    onClick={() => {
+                      changeLanguage("en");
+                      setIsLanguageToggle(!isLanguageToggle);
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabIndex="-1"
+                    id="menu-item-0"
+                  >
+                    {t(`English`)}
+                  </a>
+                  <a
+                    href="#"
+                    onClick={() => {
+                      changeLanguage("pt");
+                      setIsLanguageToggle(!isLanguageToggle);
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabIndex="-1"
+                    id="menu-item-2"
+                  >
+                    {t(`Portugese`)}
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {showPopup && (
@@ -116,7 +184,9 @@ const Header = ({ setShapes, undo }) => {
                 </svg>
               </button>
             </div>
-            <h2 className="text-xl font-bold mb-4 text-green-700">Request Quotes</h2>
+            <h2 className="text-xl font-bold mb-4 text-green-700">
+              {t(`requestQuotes`)}
+            </h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-700">Name:</label>
@@ -209,12 +279,12 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                 >
                   <option value="">Select City</option>
-                  
-                    {citiesByState.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
+
+                  {citiesByState.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="col-span-2">
@@ -234,6 +304,3 @@ const Header = ({ setShapes, undo }) => {
 };
 
 export default Header;
-
-
-

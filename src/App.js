@@ -7,7 +7,7 @@ import Sidebar from "./components/Sidebar";
 
 const App = () => {
   const [shapes, setShapes] = useState([]);
-    const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
 
   const canvasWidth = 1000;
   const canvasHeight = 610;
@@ -38,26 +38,28 @@ const App = () => {
     ]);
   };
 
-    const saveStateToHistory = () => {
-      setHistory([...history, shapes]);
-    };
+  const saveStateToHistory = () => {
+    setHistory([...history, shapes]);
+  };
 
-    const undo = () => {
-      console.log("Clicked");
-      if (history.length > 0) {
+  const undo = () => {
+    console.log("Clicked");
+    if (history.length > 0) {
       console.log("history.length", history.length);
-      
-        const lastState = history[history.length - 1];
-        setHistory(history.slice(0, history.length - 1));
-        setShapes(lastState);
-      }
-    };
+
+      const lastState = history[history.length - 1];
+      setHistory(history.slice(0, history.length - 1));
+      setShapes(lastState);
+    }
+  };
   return (
     <>
-      <Header setShapes={setShapes} undo={undo} />
-      <Sidebar addShape={addShape} saveStateToHistory={saveStateToHistory} />
-      <DragImage shapes={shapes} setShapes={setShapes} />
-      <Right addShape={addShape} />
+      <div id="app">
+        <Header setShapes={setShapes} undo={undo} />
+        <Sidebar addShape={addShape} saveStateToHistory={saveStateToHistory} />
+        <DragImage shapes={shapes} setShapes={setShapes} />
+        <Right addShape={addShape} shapes={shapes} setShapes={setShapes} />
+      </div>
     </>
   );
 };

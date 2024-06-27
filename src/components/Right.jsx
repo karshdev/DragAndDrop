@@ -1,10 +1,42 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../context/DataContext";
 import { MdDelete } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
-const Right = ({ addShape }) => {
-  const { smartPierClicked,setSmartPierClicked } = useContext(DataContext);
+const Right = ({ addShape, shapes, setShapes }) => {
+  const { t } = useTranslation();
+  const {
+    smartPierClicked,
+    setSmartPierClicked,
+    selectedShape,
+    setSelectedShape,
+    selectedShapeClick,
+    setSelectedShapeClick,
+  } = useContext(DataContext);
   const [onSelectToggle, setOnSelectToggle] = useState(false);
+  const [orientation, setOrientation] = useState(
+    selectedShape?.orientation ?? "Horizontal"
+  );
+
+  const handleOrientationChange = (newOrientation) => {
+    const newShapes = shapes.map((shape) => {
+      if (shape.id === selectedShape.id) {
+        const shapeFound = {
+          ...shape,
+          orientation: newOrientation,
+        };
+
+        setOrientation(shapeFound.orientation);
+        return shapeFound;
+      }
+      return shape;
+    });
+    setShapes(newShapes);
+  };
+
+  useEffect(() => {
+    setOrientation(selectedShape?.orientation ?? "Horizontal");
+  }, [selectedShape]);
 
   return (
     <aside
@@ -12,14 +44,28 @@ const Right = ({ addShape }) => {
       className="fixed mt-[80px] border-l top-0 right-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-white border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
       aria-label="Sidebar"
     >
+      {selectedShapeClick && (
+        <div className="text-white p-4">
+          <span>Set orientation for Pier#{selectedShape.id}</span>
+          <select
+            placeholder="Select the orientation"
+            value={orientation}
+            className="p-1 text-black border-none rounded w-full mt-2"
+            onChange={(e) => handleOrientationChange(e.target.value)}
+          >
+            <option value="Horizontal">Horizontal</option>
+            <option value="Vertical">Vertical</option>
+          </select>
+        </div>
+      )}
       {smartPierClicked && (
         <div
           className=" flex flex-col w-full justify-between py-2 px-5 overflow-y-auto bg-white dark:bg-gray-800"
           style={{ height: "calc(100vh - 80px)" }}
         >
-          <div className="">
+          <div className="text-white">
             <div>
-              Image : <strong>Smart Pier</strong>
+              {t(`image`)} : <strong>Smart Pier</strong>
             </div>
             <div className="relative text-left mt-4">
               <div className="w-full">
@@ -31,7 +77,7 @@ const Right = ({ addShape }) => {
                   aria-expanded="true"
                   aria-haspopup="true"
                 >
-                  Select Module
+                  {t(`selectModule`)}
                   <svg
                     className="-mr-1 h-5 w-5 text-gray-400"
                     viewBox="0 0 20 20"
@@ -58,38 +104,42 @@ const Right = ({ addShape }) => {
                   <div className="py-1" role="none">
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier1")
-                        setOnSelectToggle(false)}}
+                      onClick={() => {
+                        addShape("smartpier1");
+                        setOnSelectToggle(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
                       id="menu-item-0"
                     >
-                      1 Module
+                      {t(`1module`)}
                     </a>
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier2") 
-                        setOnSelectToggle(false)}}
+                      onClick={() => {
+                        addShape("smartpier2");
+                        setOnSelectToggle(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
                       id="menu-item-1"
                     >
-                      2 Module
+                      {t(`2module`)}
                     </a>
                     <a
                       href="#"
-                      onClick={() => {addShape("smartpier4")
-                        setOnSelectToggle(false)
-
+                      onClick={() => {
+                        addShape("smartpier4");
+                        setOnSelectToggle(false);
                       }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
                       id="menu-item-2"
                     >
-                      4 Module
+                      {t(`4module`)}
                     </a>
                   </div>
                 </div>
@@ -98,13 +148,13 @@ const Right = ({ addShape }) => {
           </div>
           <div className="mb-4 ">
             <button className="rounded-lg w-full border bg-sky-600 hover:bg-sky-700 p-2 my-2 text-white ">
-              Duplicate
+              {t(`duplicate`)}
             </button>
             <button className="flex items-center justify-center rounded-lg w-full border border-[#721C24] bg-[#F8D7DA] hover:bg-red-300 p-2 my-2 text-[#721C24] ">
               <span className="px-1">
                 <MdDelete />
               </span>
-              Delete
+              {t(`delete`)}
             </button>
           </div>
         </div>
@@ -132,7 +182,7 @@ const Right = ({ addShape }) => {
                 </button>
               </a>
             </li>
-            <li onClick={() => setSmartPierClicked (true)}>
+            <li onClick={() => setSmartPierClicked(true)}>
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"

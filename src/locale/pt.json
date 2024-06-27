@@ -1,0 +1,15 @@
+{
+  "undo": "Desfazer",
+  "startOver": "Reiniciar",
+  "zoomIn": "Aproximar",
+  "zoomOut": "Afastar",
+  "partsBreakdown": "Resumo Módulos",
+  "requestQuotes": "Fazer Orçamento",
+  "image": "Produto",
+  "selectModule": "Selecione um Módulo",
+  "1module": "1 Módulo",
+  "2module": "2 Módulo",
+  "4module": "4 Módulo",
+  "duplicate": "Duplicar",
+  "delete": "Remover"
+}
