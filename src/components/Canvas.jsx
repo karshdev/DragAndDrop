@@ -560,12 +560,12 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     ctx.beginPath();
     ctx.moveTo(
-      (x1 + canvasOffset.x) * zoomLevel,
-      (y1 + canvasOffset.y) * zoomLevel
+      x1 * zoomLevel + canvasOffset.x,
+      y1 * zoomLevel + canvasOffset.y
     );
     ctx.lineTo(
-      (x2 + canvasOffset.x) * zoomLevel,
-      (y2 + canvasOffset.y) * zoomLevel
+      x2 * zoomLevel + canvasOffset.x,
+      y2 * zoomLevel + canvasOffset.y
     );
     ctx.strokeStyle = "black";
     ctx.stroke();
@@ -834,25 +834,26 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 if (shape.type == "img1") {
                   offset = 0;
                 }
-
-                if (
-                  horizontalSnap &&
-                  Math.abs(newY - otherShape.y) < height / 2
-                ) {
-                  snapX =
-                    newX < otherShape.x
-                      ? otherShape.x - width + offset
-                      : otherShape.x + width - offset;
-                  snapY = otherShape.y;
-                } else if (
-                  verticalSnap &&
-                  Math.abs(newX - otherShape.x) < width / 2
-                ) {
-                  snapY =
-                    newY < otherShape.y
-                      ? otherShape.y - height + offset
-                      : otherShape.y + height - offset;
-                  snapX = otherShape.x;
+                if (shape.orientation !== "Vertical") {
+                  if (
+                    horizontalSnap &&
+                    Math.abs(newY - otherShape.y) < height / 2
+                  ) {
+                    snapX =
+                      newX < otherShape.x
+                        ? otherShape.x - width + offset
+                        : otherShape.x + width - offset;
+                    snapY = otherShape.y;
+                  } else if (
+                    verticalSnap &&
+                    Math.abs(newX - otherShape.x) < width / 2
+                  ) {
+                    snapY =
+                      newY < otherShape.y
+                        ? otherShape.y - height + offset
+                        : otherShape.y + height - offset;
+                    snapX = otherShape.x;
+                  }
                 }
               }
             });
