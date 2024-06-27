@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../context/DataContext";
 import { MdDelete } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 const Right = ({ addShape, shapes, setShapes }) => {
+  const { t } = useTranslation();
   const {
     smartPierClicked,
     setSmartPierClicked,
@@ -61,9 +63,9 @@ const Right = ({ addShape, shapes, setShapes }) => {
           className=" flex flex-col w-full justify-between py-2 px-5 overflow-y-auto bg-white dark:bg-gray-800"
           style={{ height: "calc(100vh - 80px)" }}
         >
-          <div className="">
-            <div className="text-white">
-              Image : <strong>Smart Pier</strong>
+          <div className="text-white">
+            <div>
+              {t(`image`)} : <strong>Smart Pier</strong>
             </div>
             <div className="relative text-left mt-4">
               <div className="w-full">
@@ -75,7 +77,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
                   aria-expanded="true"
                   aria-haspopup="true"
                 >
-                  Select Module
+                  {t(`selectModule`)}
                   <svg
                     className="-mr-1 h-5 w-5 text-gray-400"
                     viewBox="0 0 20 20"
@@ -111,7 +113,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
                       tabIndex="-1"
                       id="menu-item-0"
                     >
-                      1 Module
+                      {t(`1module`)}
                     </a>
                     <a
                       href="#"
@@ -124,7 +126,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
                       tabIndex="-1"
                       id="menu-item-1"
                     >
-                      2 Module
+                      {t(`2module`)}
                     </a>
                     <a
                       href="#"
@@ -137,7 +139,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
                       tabIndex="-1"
                       id="menu-item-2"
                     >
-                      4 Module
+                      {t(`4module`)}
                     </a>
                   </div>
                 </div>
@@ -146,13 +148,13 @@ const Right = ({ addShape, shapes, setShapes }) => {
           </div>
           <div className="mb-4 ">
             <button className="rounded-lg w-full border bg-sky-600 hover:bg-sky-700 p-2 my-2 text-white ">
-              Duplicate
+              {t(`duplicate`)}
             </button>
             <button className="flex items-center justify-center rounded-lg w-full border border-[#721C24] bg-[#F8D7DA] hover:bg-red-300 p-2 my-2 text-[#721C24] ">
               <span className="px-1">
                 <MdDelete />
               </span>
-              Delete
+              {t(`delete`)}
             </button>
           </div>
         </div>
