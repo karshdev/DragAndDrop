@@ -487,6 +487,32 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
   const isClose = (shape1, shape2) => {
     const distance = 1;
+    if (shape1.orientation !== shape2.orientation) {
+      const horizontalShape =
+        shape1.orientation === "Horizontal" ? shape1 : shape2;
+      const verticalShape =
+        shape1.orientation === "Horizontal" ? shape2 : shape1;
+
+      const closeX =
+        horizontalShape.y === verticalShape.y &&
+        (Math.abs(
+          horizontalShape.x -
+            (verticalShape.x +
+              (verticalShape.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+        ) <= 25 ||
+          Math.abs(
+            verticalShape.x -
+              (horizontalShape.x +
+                (horizontalShape.type === "img1"
+                  ? 150
+                  : "smartpier2" || "smartpier4"
+                  ? 100
+                  : 50))
+          ) <= 25);
+      const closeY = horizontalShape.x === verticalShape.x;
+
+      return { closeX, closeY };
+    }
 
     if (
       shape1.orientation === "Horizontal" &&
@@ -589,6 +615,60 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     const imgX = (x1 + x2) / 2 - 10;
     const imgY = (y1 + y2) / 2 - 10;
+
+    if (shape1.orientation !== shape2.orientation) {
+      const horizontalShape =
+        shape1.orientation === "Horizontal" ? shape1 : shape2;
+      const verticalShape =
+        shape1.orientation === "Horizontal" ? shape2 : shape1;
+      if (closeX) {
+        console.log("cloxee");
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgY * zoomLevel - 28 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgY * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgY * zoomLevel + 28 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+      } else if (closeY) {
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 28 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + 12 + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + 12 + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 28 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel + 12 + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+      }
+      return;
+    }
 
     if (
       shape1.orientation === "Horizontal" &&
@@ -839,16 +919,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 if (shape.orientation === "Horizontal") {
                   [width, height] = [height, width];
                 }
-                // const otherWidth = shapes[otherShape.type].width;
-                // const otherHeight = shapes[otherShape.type].height;
-                // const doubleWidth =
-                //   otherShape.type == "smartpier4" && shape.type == "smartpier2"
-                //     ? width
-                //     : otherShape.type == "smartpier2" &&
-                //       shape.type == "smartpier4"
-                //     ? otherWidth
-                //     : width;
-                // const doubleHeight = otherHeight;
 
                 const horizontalSnap =
                   Math.abs(newX - otherShape.x) <= 20 ||
@@ -863,24 +933,71 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 if (shape.type == "img1") {
                   offset = 0;
                 }
-                if (
-                  horizontalSnap &&
-                  Math.abs(newY - otherShape.y) < height / 2
-                ) {
-                  snapX =
-                    newX < otherShape.x
-                      ? otherShape.x - width + offset
-                      : otherShape.x + width - offset;
-                  snapY = otherShape.y;
-                } else if (
-                  verticalSnap &&
-                  Math.abs(newX - otherShape.x) < width / 2
-                ) {
-                  snapY =
-                    newY < otherShape.y
-                      ? otherShape.y - height + offset
-                      : otherShape.y + height - offset;
-                  snapX = otherShape.x;
+                if (shape.orientation !== otherShape.orientation) {
+                  if (shape.orientation === "Horizontal") {
+                    const verticalSnap =
+                      Math.abs(newY - otherShape.y) <= 40 ||
+                      Math.abs(newY + height - otherShape.y) <= 40 ||
+                      Math.abs(newY - otherShape.y - height) <= 40;
+                    if (horizontalSnap && Math.abs(newY - otherShape.y) <= 20) {
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - width + offset + 25
+                          : otherShape.x + width - offset - 25;
+                      snapY = otherShape.y;
+                    } else if (
+                      verticalSnap &&
+                      Math.abs(newX - otherShape.x) <= 20
+                    ) {
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - height + offset - 25
+                          : otherShape.y + height - offset + 25;
+                      snapX = otherShape.x;
+                    }
+                  } else {
+                    const horizontalSnap =
+                      Math.abs(newX - otherShape.x) <= 40 ||
+                      Math.abs(newX + width - otherShape.x) <= 40 ||
+                      Math.abs(newX - otherShape.x - width) <= 40;
+                    if (horizontalSnap && Math.abs(newY - otherShape.y) <= 20) {
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - width + offset - 25
+                          : otherShape.x + width - offset + 25;
+                      snapY = otherShape.y;
+                    } else if (
+                      verticalSnap &&
+                      Math.abs(newX - otherShape.x) <= 20
+                    ) {
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - height + offset + 25
+                          : otherShape.y + height - offset - 25;
+                      snapX = otherShape.x;
+                    }
+                  }
+                }
+                if (shape.orientation === otherShape.orientation) {
+                  if (
+                    horizontalSnap &&
+                    Math.abs(newY - otherShape.y) < height / 2
+                  ) {
+                    snapX =
+                      newX < otherShape.x
+                        ? otherShape.x - width + offset
+                        : otherShape.x + width - offset;
+                    snapY = otherShape.y;
+                  } else if (
+                    verticalSnap &&
+                    Math.abs(newX - otherShape.x) < width / 2
+                  ) {
+                    snapY =
+                      newY < otherShape.y
+                        ? otherShape.y - height + offset
+                        : otherShape.y + height - offset;
+                    snapX = otherShape.x;
+                  }
                 }
               }
             });
