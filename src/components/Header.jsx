@@ -105,7 +105,7 @@ const Header = ({ setShapes, undo }) => {
           >
             {t(`requestQuotes`)}
           </button>
-          <div className="relative text-left flex items-center">
+          {/* <div className="relative text-left flex items-center">
             <div className="w-full">
               <button
                 onClick={() => setIsLanguageToggle(!isLanguageToggle)}
@@ -157,7 +157,7 @@ const Header = ({ setShapes, undo }) => {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
       {showPopup && (
