@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import DragImage from "./components/DragImage";
 import Header from "./components/Header";
 import Right from "./components/Right";
 import Sidebar from "./components/Sidebar";
+import AttentionModal from "./components/AttentionModal";
 
 const App = () => {
   const [shapes, setShapes] = useState([]);
   const [history, setHistory] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const canvasWidth = 1000;
   const canvasHeight = 610;
@@ -53,14 +55,39 @@ const App = () => {
       setShapes(lastState);
     }
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 900);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   return (
     <>
-      <div id="app">
-        <Header setShapes={setShapes} undo={undo} />
-        <Sidebar addShape={addShape} saveStateToHistory={saveStateToHistory} />
-        <DragImage shapes={shapes} setShapes={setShapes} />
-        <Right addShape={addShape} shapes={shapes} setShapes={setShapes} />
-      </div>
+      {isMobile && (
+        <div id="app">
+          <AttentionModal />
+        </div>
+      )}
+      {!isMobile && (
+        <div id="app">
+          <Header setShapes={setShapes} undo={undo} />
+          <Sidebar
+            addShape={addShape}
+            saveStateToHistory={saveStateToHistory}
+          />
+          <DragImage shapes={shapes} setShapes={setShapes} />
+          <Right addShape={addShape} shapes={shapes} setShapes={setShapes} />
+        </div>
+      )}
     </>
   );
 };
