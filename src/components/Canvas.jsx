@@ -135,8 +135,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         (hoveredShape && hoveredShape.id === shape.id) ||
         (selectedShape && selectedShape.id === shape.id)
       ) {
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 1;
         if (shape.orientation === "Horizontal") {
           ctx.strokeRect(
             x - 25 + canvasOffset.x,
