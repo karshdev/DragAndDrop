@@ -622,47 +622,48 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       const verticalShape =
         shape1.orientation === "Horizontal" ? shape2 : shape1;
       if (closeX) {
-        console.log("cloxee");
+        const x = horizontalShape.x > verticalShape.x ? 12 : -13;
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgX * zoomLevel - x + canvasOffset.x,
           imgY * zoomLevel - 28 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgX * zoomLevel - x + canvasOffset.x,
           imgY * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
-          imgX * zoomLevel - 12 + canvasOffset.x,
+          imgX * zoomLevel - x + canvasOffset.x,
           imgY * zoomLevel + 28 * zoomLevel + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
       } else if (closeY) {
+        const y = horizontalShape.y > verticalShape.y ? -12 : 10;
         ctx.drawImage(
           images.connector,
           imgX * zoomLevel - 28 * zoomLevel + canvasOffset.x,
-          imgY * zoomLevel + 12 + canvasOffset.y,
+          imgY * zoomLevel - y + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
           imgX * zoomLevel + canvasOffset.x,
-          imgY * zoomLevel + 12 + canvasOffset.y,
+          imgY * zoomLevel - y + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
         ctx.drawImage(
           images.connector,
           imgX * zoomLevel + 28 * zoomLevel + canvasOffset.x,
-          imgY * zoomLevel + 12 + canvasOffset.y,
+          imgY * zoomLevel - y + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
         );
