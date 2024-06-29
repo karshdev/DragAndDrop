@@ -472,10 +472,88 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     );
   };
 
+  const isXOrientedShapeClose = (shape1, shape2) => {
+    const distance = 1;
+
+    const horizontalShape =
+      shape1.orientation === "Horizontal" ? shape1 : shape2;
+    const verticalShape = shape1.orientation === "Horizontal" ? shape2 : shape1;
+
+    const horizontallyAligned =
+      Math.abs(
+        horizontalShape.x -
+          (verticalShape.x +
+            (verticalShape.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+      ) <= 25 ||
+      Math.abs(
+        verticalShape.x -
+          (horizontalShape.x +
+            (horizontalShape.type === "img1"
+              ? 150
+              : "smartpier2" || "smartpier4"
+              ? 100
+              : 50))
+      ) <= 25;
+    const closeX = horizontalShape.y === verticalShape.y && horizontallyAligned;
+    const closeXBottom =
+      horizontalShape.y === verticalShape.y + 25 && horizontallyAligned;
+    const closeXTop =
+      horizontalShape.y === verticalShape.y - 25 && horizontallyAligned;
+
+    const verticallyAligned =
+      Math.abs(
+        horizontalShape.y -
+          (verticalShape.y +
+            (verticalShape.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+      ) <= 25 ||
+      Math.abs(
+        verticalShape.y -
+          (horizontalShape.y +
+            (horizontalShape.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
+      ) <= 25;
+    const closeY = horizontalShape.x === verticalShape.x && verticallyAligned;
+    const closeYRight =
+      horizontalShape.x === verticalShape.x + 25 && verticallyAligned;
+    const closeYLeft =
+      horizontalShape.x === verticalShape.x - 25 && verticallyAligned;
+    return { closeX, closeY, closeYRight, closeYLeft, closeXBottom, closeXTop };
+  };
+
   const drawConnectors = (ctx) => {
     shapes.forEach((shape, index) => {
       shapes.slice(index + 1).forEach((otherShape) => {
         if (shape.type === otherShape.type) {
+          if (shape.orientation !== otherShape.orientation) {
+            const {
+              closeX,
+              closeY,
+              closeYLeft,
+              closeYRight,
+              closeXBottom,
+              closeXTop,
+            } = isXOrientedShapeClose(shape, otherShape);
+            if (
+              closeX ||
+              closeY ||
+              closeYLeft ||
+              closeYRight ||
+              closeXBottom ||
+              closeXTop
+            ) {
+              drawConnector(
+                ctx,
+                shape,
+                otherShape,
+                closeX,
+                closeY,
+                closeYLeft,
+                closeYRight,
+                closeXTop,
+                closeXBottom
+              );
+              return;
+            }
+          }
           const { closeX, closeY } = isClose(shape, otherShape);
           if (closeX || closeY) {
             drawConnector(ctx, shape, otherShape, closeX, closeY);
@@ -487,32 +565,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
   const isClose = (shape1, shape2) => {
     const distance = 1;
-    if (shape1.orientation !== shape2.orientation) {
-      const horizontalShape =
-        shape1.orientation === "Horizontal" ? shape1 : shape2;
-      const verticalShape =
-        shape1.orientation === "Horizontal" ? shape2 : shape1;
-
-      const closeX =
-        horizontalShape.y === verticalShape.y &&
-        (Math.abs(
-          horizontalShape.x -
-            (verticalShape.x +
-              (verticalShape.type === "img1" ? 150 : "smartpier4" ? 100 : 50))
-        ) <= 25 ||
-          Math.abs(
-            verticalShape.x -
-              (horizontalShape.x +
-                (horizontalShape.type === "img1"
-                  ? 150
-                  : "smartpier2" || "smartpier4"
-                  ? 100
-                  : 50))
-          ) <= 25);
-      const closeY = horizontalShape.x === verticalShape.x;
-
-      return { closeX, closeY };
-    }
 
     if (
       shape1.orientation === "Horizontal" &&
@@ -595,7 +647,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     return { closeX, closeY };
   };
 
-  const drawConnector = (ctx, shape1, shape2, closeX, closeY) => {
+  const drawConnector = (
+    ctx,
+    shape1,
+    shape2,
+    closeX,
+    closeY,
+    closeYLeft,
+    closeYRight,
+    closeXTop,
+    closeXBottom
+  ) => {
     const x1 = shape1.x + (shape1.type === "img1" ? 50 : 25);
     const y1 = shape1.y + (shape1.type === "img1" ? 75 : 25);
     const x2 = shape2.x + (shape2.type === "img1" ? 50 : 25);
@@ -644,6 +706,52 @@ const CanvasComponent = ({ shapes, setShapes }) => {
           20 * zoomLevel,
           20 * zoomLevel
         );
+      } else if (closeXTop) {
+        const x = horizontalShape.x > verticalShape.x ? 12 : -13;
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel - 45 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel - 15 + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel + 15 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+      } else if (closeXBottom) {
+        const x = horizontalShape.x > verticalShape.x ? 12 : -13;
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel - 15 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel + 15 + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - x + canvasOffset.x,
+          imgY * zoomLevel + 45 * zoomLevel + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
       } else if (closeY) {
         const y = horizontalShape.y > verticalShape.y ? -12 : 10;
         ctx.drawImage(
@@ -663,6 +771,52 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         ctx.drawImage(
           images.connector,
           imgX * zoomLevel + 28 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+      } else if (closeYLeft) {
+        const y = horizontalShape.y > verticalShape.y ? -12 : 10;
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 15 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 15 + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 45 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+      } else if (closeYRight) {
+        const y = horizontalShape.y > verticalShape.y ? -12 : 10;
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 45 * zoomLevel + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel - 15 + canvasOffset.x,
+          imgY * zoomLevel - y + canvasOffset.y,
+          20 * zoomLevel,
+          20 * zoomLevel
+        );
+        ctx.drawImage(
+          images.connector,
+          imgX * zoomLevel + 15 * zoomLevel + canvasOffset.x,
           imgY * zoomLevel - y + canvasOffset.y,
           20 * zoomLevel,
           20 * zoomLevel
@@ -936,16 +1090,56 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                 }
                 if (shape.orientation !== otherShape.orientation) {
                   if (shape.orientation === "Horizontal") {
+                    const horizontalSnap =
+                      Math.abs(newX - otherShape.x) <= 20 ||
+                      Math.abs(newX + width - otherShape.x) <= 20 ||
+                      Math.abs(newX - otherShape.x - width) <= 20;
+
+                    const horizontalSnapTop =
+                      Math.abs(newX - otherShape.x) <= 40 ||
+                      Math.abs(newX + width - otherShape.x) <= 40 ||
+                      Math.abs(newX - otherShape.x - width) <= 40;
+
                     const verticalSnap =
                       Math.abs(newY - otherShape.y) <= 40 ||
                       Math.abs(newY + height - otherShape.y) <= 40 ||
                       Math.abs(newY - otherShape.y - height) <= 40;
-                    if (horizontalSnap && Math.abs(newY - otherShape.y) <= 20) {
+
+                    if (
+                      horizontalSnapTop &&
+                      Math.abs(newY - otherShape.y) >= 20 &&
+                      Math.abs(newY - otherShape.y) <= 40
+                    ) {
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - width + offset + 25
+                          : otherShape.x + width - offset - 25;
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - 25
+                          : otherShape.y + 25;
+                    } else if (
+                      horizontalSnap &&
+                      Math.abs(newY - otherShape.y) <= 20
+                    ) {
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset + 25
                           : otherShape.x + width - offset - 25;
                       snapY = otherShape.y;
+                    } else if (
+                      verticalSnap &&
+                      Math.abs(newX - otherShape.x) >= 20 &&
+                      Math.abs(newX - otherShape.x) <= 40
+                    ) {
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - height + offset - 25
+                          : otherShape.y + height - offset + 25;
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - 25
+                          : otherShape.x + 25;
                     } else if (
                       verticalSnap &&
                       Math.abs(newX - otherShape.x) <= 20
@@ -961,12 +1155,42 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       Math.abs(newX - otherShape.x) <= 40 ||
                       Math.abs(newX + width - otherShape.x) <= 40 ||
                       Math.abs(newX - otherShape.x - width) <= 40;
-                    if (horizontalSnap && Math.abs(newY - otherShape.y) <= 20) {
+
+                    if (
+                      horizontalSnap &&
+                      Math.abs(newY - otherShape.y) >= 20 &&
+                      Math.abs(newY - otherShape.y) <= 40
+                    ) {
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - width + offset - 25
+                          : otherShape.x + width - offset + 25;
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - 25
+                          : otherShape.y + 25;
+                    } else if (
+                      horizontalSnap &&
+                      Math.abs(newY - otherShape.y) <= 20
+                    ) {
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset - 25
                           : otherShape.x + width - offset + 25;
                       snapY = otherShape.y;
+                    } else if (
+                      verticalSnap &&
+                      Math.abs(newX - otherShape.x) >= 20 &&
+                      Math.abs(newX - otherShape.x) <= 40
+                    ) {
+                      snapY =
+                        newY < otherShape.y
+                          ? otherShape.y - height + offset + 25
+                          : otherShape.y + height - offset - 25;
+                      snapX =
+                        newX < otherShape.x
+                          ? otherShape.x - 25
+                          : otherShape.x + 25;
                     } else if (
                       verticalSnap &&
                       Math.abs(newX - otherShape.x) <= 20
