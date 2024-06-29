@@ -332,113 +332,128 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.fillStyle = "black";
     let arrowSize = 10;
     // Draw width measurement on top
-    ctx.beginPath();
-    ctx.moveTo(
-      -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-    );
-    ctx.lineTo(
-      width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-    );
-    ctx.stroke();
+    if (!shape.isShapeConnectedTop) {
+      ctx.beginPath();
+      ctx.moveTo(
+        -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+      );
+      ctx.lineTo(
+        width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+      );
+      ctx.stroke();
 
-    // Draw arrows for width
-    ctx.beginPath();
-    ctx.moveTo(
-      -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-    );
-    ctx.lineTo(
-      -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 -
-        (shape.orientation === "Horizontal" ? 0 : 20) -
-        arrowSize / 2
-    );
-    ctx.lineTo(
-      -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 -
-        (shape.orientation === "Horizontal" ? 0 : 20) +
-        arrowSize / 2
-    );
-    ctx.closePath();
-    ctx.fill();
+      // Draw arrows for width
+      ctx.beginPath();
+      ctx.moveTo(
+        -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+      );
+      ctx.lineTo(
+        -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 -
+          (shape.orientation === "Horizontal" ? 0 : 20) -
+          arrowSize / 2
+      );
+      ctx.lineTo(
+        -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 -
+          (shape.orientation === "Horizontal" ? 0 : 20) +
+          arrowSize / 2
+      );
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(
+        width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+      );
+      ctx.lineTo(
+        width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 -
+          (shape.orientation === "Horizontal" ? 0 : 20) -
+          arrowSize / 2
+      );
+      ctx.lineTo(
+        width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+        -height / 2 -
+          (shape.orientation === "Horizontal" ? 0 : 20) +
+          arrowSize / 2
+      );
+      ctx.closePath();
+      ctx.fill();
 
-    ctx.beginPath();
-    ctx.moveTo(
-      width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-    );
-    ctx.lineTo(
-      width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 -
-        (shape.orientation === "Horizontal" ? 0 : 20) -
-        arrowSize / 2
-    );
-    ctx.lineTo(
-      width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-      -height / 2 -
-        (shape.orientation === "Horizontal" ? 0 : 20) +
-        arrowSize / 2
-    );
-    ctx.closePath();
-    ctx.fill();
-
-    // Draw width text
-    ctx.fillText(
-      `${parseInt(width / zoomLevel)}`,
-      -(shape.orientation === "Horizontal" ? 25 : 10),
-      -height / 2 - (shape.orientation === "Horizontal" ? 10 : 25)
-    );
-
-    // Draw height measurement on the left
-    ctx.beginPath();
-    if (shape.orientation !== "Horizontal") {
-      ctx.moveTo(-width / 2 - 20, -height / 2);
-      ctx.lineTo(-width / 2 - 20, height / 2);
-    } else {
-      ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
-      ctx.lineTo(-width / 2 - 40, height / 2 + 20);
+      // Draw width text
+      ctx.fillText(
+        `${parseInt(width / zoomLevel)}`,
+        -(shape.orientation === "Horizontal" ? 25 : 10),
+        -height / 2 - (shape.orientation === "Horizontal" ? 10 : 25)
+      );
     }
-    ctx.stroke();
 
-    // Draw arrows for height
-    ctx.beginPath();
-    if (shape.orientation !== "Horizontal") {
-      ctx.moveTo(-width / 2 - 20, -height / 2);
-      ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
-      ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
-    } else {
-      ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
-      ctx.lineTo(-width / 2 - 40 - arrowSize / 2, -height / 2 + arrowSize + 20);
-      ctx.lineTo(-width / 2 - 40 + arrowSize / 2, -height / 2 + arrowSize + 20);
-    }
-    ctx.closePath();
-    ctx.fill();
+    if (!shape.isShapeConnectedLeft) {
+      // Draw height measurement on the left
+      ctx.beginPath();
+      if (shape.orientation !== "Horizontal") {
+        ctx.moveTo(-width / 2 - 20, -height / 2);
+        ctx.lineTo(-width / 2 - 20, height / 2);
+      } else {
+        ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+        ctx.lineTo(-width / 2 - 40, height / 2 + 20);
+      }
+      ctx.stroke();
 
-    ctx.beginPath();
-    if (shape.orientation !== "Horizontal") {
-      ctx.moveTo(-width / 2 - 20, height / 2);
-      ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
-      ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
-    } else {
-      ctx.moveTo(-width / 2 - 40, height / 2 + 20);
-      ctx.lineTo(-width / 2 - 40 - arrowSize / 2, height / 2 - arrowSize + 20);
-      ctx.lineTo(-width / 2 - 40 + arrowSize / 2, height / 2 - arrowSize + 20);
-    }
-    ctx.closePath();
-    ctx.fill();
+      // Draw arrows for height
+      ctx.beginPath();
+      if (shape.orientation !== "Horizontal") {
+        ctx.moveTo(-width / 2 - 20, -height / 2);
+        ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
+        ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
+      } else {
+        ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+        ctx.lineTo(
+          -width / 2 - 40 - arrowSize / 2,
+          -height / 2 + arrowSize + 20
+        );
+        ctx.lineTo(
+          -width / 2 - 40 + arrowSize / 2,
+          -height / 2 + arrowSize + 20
+        );
+      }
+      ctx.closePath();
+      ctx.fill();
 
-    // Draw height text
-    ctx.save();
-    ctx.translate(-width / 2 - 25, 0);
-    ctx.rotate(-Math.PI / 2);
-    if (shape.orientation !== "Horizontal") {
-      ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
-    } else {
-      ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
+      ctx.beginPath();
+      if (shape.orientation !== "Horizontal") {
+        ctx.moveTo(-width / 2 - 20, height / 2);
+        ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
+        ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
+      } else {
+        ctx.moveTo(-width / 2 - 40, height / 2 + 20);
+        ctx.lineTo(
+          -width / 2 - 40 - arrowSize / 2,
+          height / 2 - arrowSize + 20
+        );
+        ctx.lineTo(
+          -width / 2 - 40 + arrowSize / 2,
+          height / 2 - arrowSize + 20
+        );
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw height text
+      ctx.save();
+      ctx.translate(-width / 2 - 25, 0);
+      ctx.rotate(-Math.PI / 2);
+      if (shape.orientation !== "Horizontal") {
+        ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
+      } else {
+        ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
+      }
+      ctx.restore();
     }
-    ctx.restore();
     ctx.restore();
   };
 
@@ -1045,6 +1060,18 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     }
   };
 
+  const handleUpdateShape = (shapeId, props) => {
+    setShapes((prevShapes) => {
+      return prevShapes.map((shape) => {
+        if (shape.id === shapeId) {
+          return { ...props };
+        }
+        console.log(shape);
+        return shape;
+      });
+    });
+  };
+
   const handleMouseMove = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -1055,6 +1082,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       setShapes((prevShapes) => {
         return prevShapes.map((shape) => {
           if (shape.id === draggingShape.id) {
+            let isShapeConnectedLeft = false;
+            let isShapeConnectedTop = false;
             const newX = mouseX - draggingShape.offsetX;
             const newY = mouseY - draggingShape.offsetY;
 
@@ -1110,6 +1139,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       Math.abs(newY - otherShape.y) >= 20 &&
                       Math.abs(newY - otherShape.y) <= 40
                     ) {
+                      if (newX < otherShape.x) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: true,
+                        });
+                        isShapeConnectedLeft = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: false,
+                        });
+                        isShapeConnectedLeft = true;
+                      }
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset + 25
@@ -1122,6 +1164,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       horizontalSnap &&
                       Math.abs(newY - otherShape.y) <= 20
                     ) {
+                      if (newX < otherShape.x) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: true,
+                        });
+                        isShapeConnectedLeft = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: false,
+                        });
+                        isShapeConnectedLeft = true;
+                      }
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset + 25
@@ -1132,6 +1187,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       Math.abs(newX - otherShape.x) >= 20 &&
                       Math.abs(newX - otherShape.x) <= 40
                     ) {
+                      if (newY < otherShape.y) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: true,
+                        });
+                        isShapeConnectedTop = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: false,
+                        });
+                        isShapeConnectedTop = true;
+                      }
                       snapY =
                         newY < otherShape.y
                           ? otherShape.y - height + offset - 25
@@ -1144,6 +1212,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       verticalSnap &&
                       Math.abs(newX - otherShape.x) <= 20
                     ) {
+                      if (newY < otherShape.y) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: true,
+                        });
+                        isShapeConnectedTop = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: false,
+                        });
+                        isShapeConnectedTop = true;
+                      }
                       snapY =
                         newY < otherShape.y
                           ? otherShape.y - height + offset - 25
@@ -1161,6 +1242,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       Math.abs(newY - otherShape.y) >= 20 &&
                       Math.abs(newY - otherShape.y) <= 40
                     ) {
+                      if (newX < otherShape.x) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: true,
+                        });
+                        isShapeConnectedLeft = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: false,
+                        });
+                        isShapeConnectedLeft = true;
+                      }
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset - 25
@@ -1173,6 +1267,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       horizontalSnap &&
                       Math.abs(newY - otherShape.y) <= 20
                     ) {
+                      if (newX < otherShape.x) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: true,
+                        });
+                        isShapeConnectedLeft = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedLeft: false,
+                        });
+                        isShapeConnectedLeft = true;
+                      }
                       snapX =
                         newX < otherShape.x
                           ? otherShape.x - width + offset - 25
@@ -1183,6 +1290,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       Math.abs(newX - otherShape.x) >= 20 &&
                       Math.abs(newX - otherShape.x) <= 40
                     ) {
+                      if (newY < otherShape.y) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: true,
+                        });
+                        isShapeConnectedTop = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: false,
+                        });
+                        isShapeConnectedTop = true;
+                      }
                       snapY =
                         newY < otherShape.y
                           ? otherShape.y - height + offset + 25
@@ -1195,6 +1315,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       verticalSnap &&
                       Math.abs(newX - otherShape.x) <= 20
                     ) {
+                      if (newY < otherShape.y) {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: true,
+                        });
+                        isShapeConnectedTop = false;
+                      } else {
+                        handleUpdateShape(otherShape.id, {
+                          ...otherShape,
+                          isShapeConnectedTop: false,
+                        });
+                        isShapeConnectedTop = true;
+                      }
                       snapY =
                         newY < otherShape.y
                           ? otherShape.y - height + offset + 25
@@ -1208,6 +1341,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                     horizontalSnap &&
                     Math.abs(newY - otherShape.y) < height / 2
                   ) {
+                    if (newX < otherShape.x) {
+                      handleUpdateShape(otherShape.id, {
+                        ...otherShape,
+                        isShapeConnectedLeft: true,
+                      });
+                      isShapeConnectedLeft = false;
+                    } else {
+                      handleUpdateShape(otherShape.id, {
+                        ...otherShape,
+                        isShapeConnectedLeft: false,
+                      });
+                      isShapeConnectedLeft = true;
+                    }
                     snapX =
                       newX < otherShape.x
                         ? otherShape.x - width + offset
@@ -1217,6 +1363,19 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                     verticalSnap &&
                     Math.abs(newX - otherShape.x) < width / 2
                   ) {
+                    if (newY < otherShape.y) {
+                      handleUpdateShape(otherShape.id, {
+                        ...otherShape,
+                        isShapeConnectedTop: true,
+                      });
+                      isShapeConnectedTop = false;
+                    } else {
+                      handleUpdateShape(otherShape.id, {
+                        ...otherShape,
+                        isShapeConnectedTop: false,
+                      });
+                      isShapeConnectedTop = true;
+                    }
                     snapY =
                       newY < otherShape.y
                         ? otherShape.y - height + offset
@@ -1231,6 +1390,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
               ...shape,
               x: snapX,
               y: snapY,
+              isShapeConnectedLeft,
+              isShapeConnectedTop,
             };
           }
           return shape;
