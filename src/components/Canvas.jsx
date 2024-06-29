@@ -1066,7 +1066,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         if (shape.id === shapeId) {
           return { ...props };
         }
-        console.log(shape);
         return shape;
       });
     });
@@ -1104,11 +1103,11 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   [width, height] = [height, width];
                 }
 
-                const horizontalSnap =
+                let horizontalSnap =
                   Math.abs(newX - otherShape.x) <= 20 ||
                   Math.abs(newX + width - otherShape.x) <= 20 ||
                   Math.abs(newX - otherShape.x - width) <= 20;
-                const verticalSnap =
+                let verticalSnap =
                   Math.abs(newY - otherShape.y) <= 20 ||
                   Math.abs(newY + height - otherShape.y) <= 20 ||
                   Math.abs(newY - otherShape.y - height) <= 20;
@@ -1337,6 +1336,39 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   }
                 }
                 if (shape.orientation === otherShape.orientation) {
+                  if (shape.type !== "img1" && otherShape.type !== "img1") {
+                    if (shape.type === "smartpier2" && shape.y > otherShape.y)
+                      height = 50;
+                    if (
+                      shape.type === "smartpier1" &&
+                      otherShape.type === "smartpier2" &&
+                      shape.y > otherShape.y
+                    ) {
+                      height = 100;
+                      verticalSnap =
+                        Math.abs(newY - otherShape.y) <= 60 ||
+                        Math.abs(newY + height - otherShape.y) <= 60 ||
+                        Math.abs(newY - otherShape.y - height) <= 60;
+                    }
+                    if (
+                      (shape.type === "smartpier1" ||
+                        shape.type === "smartpier2") &&
+                      otherShape.type === "smartpier4"
+                    ) {
+                      height = 100;
+                      const variableLengthY = 20;
+                      verticalSnap =
+                        Math.abs(newY - otherShape.y) <= variableLengthY ||
+                        Math.abs(newY + height - otherShape.y) <=
+                          variableLengthY ||
+                        Math.abs(newY - otherShape.y - height) <=
+                          variableLengthY;
+                      horizontalSnap =
+                        Math.abs(newX - otherShape.x) <= 60 ||
+                        Math.abs(newX + width - otherShape.x) <= 60 ||
+                        Math.abs(newX - otherShape.x - width) <= 60;
+                    }
+                  }
                   if (
                     horizontalSnap &&
                     Math.abs(newY - otherShape.y) < height / 2
@@ -1354,10 +1386,16 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       });
                       isShapeConnectedLeft = true;
                     }
+                    const extraLength =
+                      (shape.type === "smartpier1" ||
+                        shape.type === "smartpier2") &&
+                      otherShape.type === "smartpier4"
+                        ? 50
+                        : 0;
                     snapX =
                       newX < otherShape.x
                         ? otherShape.x - width + offset
-                        : otherShape.x + width - offset;
+                        : otherShape.x + width - offset + extraLength;
                     snapY = otherShape.y;
                   } else if (
                     verticalSnap &&
@@ -1376,9 +1414,14 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                       });
                       isShapeConnectedTop = true;
                     }
+                    const extraLength =
+                      shape.type === "smartpier1" &&
+                      otherShape.type === "smartpier4"
+                        ? 50
+                        : 0;
                     snapY =
                       newY < otherShape.y
-                        ? otherShape.y - height + offset
+                        ? otherShape.y - height + offset + extraLength
                         : otherShape.y + height - offset;
                     snapX = otherShape.x;
                   }
