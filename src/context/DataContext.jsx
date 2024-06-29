@@ -6,7 +6,7 @@ export const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const { i18n } = useTranslation();
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("pt");
   const [smartPierClicked, setSmartPierClicked] = useState(false);
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedShapeClick, setSelectedShapeClick] = useState(false);
