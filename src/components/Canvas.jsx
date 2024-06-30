@@ -1071,6 +1071,148 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     });
   };
 
+  const handleConnectSmartPier = (shape, otherShape, newX, newY) => {
+    let snapX = newX;
+    let snapY = newY;
+    let offset = 10;
+    const shapes = {
+      smartpier1: { width: 50, height: 50 },
+      smartpier2: { width: 50, height: 100 },
+      smartpier4: { width: 100, height: 100 },
+    };
+    let width = shapes[shape.type].width;
+    let height = shapes[shape.type].height;
+    if (shape.type === "smartpier1") {
+      const targetDifferenceWidthRight =
+        otherShape.type === "smartpier4" ? 55 : 20;
+      const targetDifferenceWidthLeft =
+        otherShape.type === "smartpier4" ? 10 : 20;
+      let horizontalSnap =
+        Math.abs(newX + width - otherShape.x) <= targetDifferenceWidthLeft ||
+        Math.abs(newX - otherShape.x - width) <= targetDifferenceWidthRight;
+
+      const targetDifferenceWidthTop =
+        otherShape.type === "smartpier4" ? 20 : 20;
+      const targetDifferenceWidthBottom =
+        otherShape.type === "smartpier4" ? 60 : 60;
+      let verticalSnap =
+        Math.abs(newY + height - otherShape.y) <= targetDifferenceWidthTop ||
+        Math.abs(newY - otherShape.y - height) <= targetDifferenceWidthBottom;
+
+      if (horizontalSnap && Math.abs(newY - otherShape.y) < height) {
+        const variableOffset = otherShape.type === "smartpier4" ? 60 : 10;
+        snapX =
+          newX > otherShape.x
+            ? otherShape.x + shapes[otherShape.type].width - 10
+            : otherShape.x - shapes[otherShape.type].width + variableOffset;
+        snapY = newY > otherShape.y ? otherShape.y + 50 : otherShape.y;
+      } else if (verticalSnap && Math.abs(newX - otherShape.x) < width) {
+        const extraLength =
+          shape.type === "smartpier1" &&
+          ["smartpier4", "smartpier1"].includes(otherShape.type)
+            ? 50
+            : 0;
+
+        snapY =
+          newY < otherShape.y
+            ? otherShape.y -
+              height +
+              offset +
+              extraLength -
+              (otherShape.type === "smartpier4" ? 50 : 0)
+            : otherShape.y +
+              height -
+              offset +
+              extraLength +
+              (otherShape.type === "smartpier4" ? 0 : 50);
+        snapX = newX > otherShape.x ? otherShape.x + 45 : otherShape.x;
+      }
+    } else if (shape.type === "smartpier2") {
+      const targetDifferenceWidthRight =
+        otherShape.type === "smartpier4" ? 55 : 20;
+      const targetDifferenceWidthLeft =
+        otherShape.type === "smartpier4" ? 10 : 20;
+      let horizontalSnap =
+        Math.abs(newX + width - otherShape.x) <= targetDifferenceWidthLeft ||
+        Math.abs(newX - otherShape.x - width) <= targetDifferenceWidthRight;
+
+      const targetDifferenceWidthTop =
+        otherShape.type === "smartpier4" ? 20 : 20;
+      const targetDifferenceWidthBottom =
+        otherShape.type === "smartpier4" ? 60 : 60;
+      let verticalSnap =
+        Math.abs(newY + height - otherShape.y) <= targetDifferenceWidthTop ||
+        Math.abs(newY - otherShape.y - height) <= targetDifferenceWidthBottom;
+
+      if (horizontalSnap && Math.abs(newY - otherShape.y) < height) {
+        const variableOffset = otherShape.type === "smartpier4" ? 60 : 10;
+        snapX =
+          newX > otherShape.x
+            ? otherShape.x + shapes[otherShape.type].width - 10
+            : otherShape.x - shapes[otherShape.type].width + variableOffset;
+        snapY = newY > otherShape.y ? otherShape.y + 50 : otherShape.y;
+      } else if (verticalSnap && Math.abs(newX - otherShape.x) < width) {
+        const extraLength =
+          shape.type === "smartpier1" &&
+          ["smartpier4", "smartpier1"].includes(otherShape.type)
+            ? 50
+            : 0;
+
+        snapY =
+          newY < otherShape.y
+            ? otherShape.y - height + offset + extraLength
+            : otherShape.y +
+              height -
+              offset +
+              extraLength +
+              (otherShape.type === "smartpier4" ? 0 : -50);
+        snapX = newX > otherShape.x ? otherShape.x + 45 : otherShape.x;
+      }
+    } else if (shape.type === "smartpier4") {
+      const targetDifferenceWidthRight =
+        otherShape.type === "smartpier4" ? 55 : 20;
+      const targetDifferenceWidthLeft =
+        otherShape.type === "smartpier4" ? 10 : 20;
+      let horizontalSnap =
+        Math.abs(newX + width - otherShape.x) <= targetDifferenceWidthLeft ||
+        Math.abs(newX - otherShape.x - width) <= targetDifferenceWidthRight;
+
+      const targetDifferenceWidthTop =
+        otherShape.type === "smartpier4" ? 20 : 20;
+      const targetDifferenceWidthBottom =
+        otherShape.type === "smartpier4" ? 60 : 60;
+      let verticalSnap =
+        Math.abs(newY + height - otherShape.y) <= targetDifferenceWidthTop ||
+        Math.abs(newY - otherShape.y - height) <= targetDifferenceWidthBottom;
+
+      if (horizontalSnap && Math.abs(newY - otherShape.y) < height / 2) {
+        snapX =
+          newX > otherShape.x
+            ? otherShape.x + shapes[otherShape.type].width - 10
+            : otherShape.x - shapes[otherShape.type].width - 40;
+        snapY = newY > otherShape.y ? otherShape.y + 50 : otherShape.y;
+      } else if (verticalSnap && Math.abs(newX - otherShape.x) < width) {
+        const extraLength =
+          shape.type === "smartpier1" &&
+          ["smartpier4", "smartpier1"].includes(otherShape.type)
+            ? 50
+            : 0;
+
+        snapY =
+          newY < otherShape.y
+            ? otherShape.y - height + offset + extraLength
+            : otherShape.y +
+              height -
+              offset +
+              extraLength -
+              (otherShape.type === "smartpier2" ? 0 : 50);
+        snapX = newX > otherShape.x ? otherShape.x + 45 : otherShape.x;
+      }
+    }
+
+    return { snapX, snapY };
+  };
+
   const handleMouseMove = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -1336,40 +1478,200 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   }
                 }
                 if (shape.orientation === otherShape.orientation) {
-                  if (shape.type !== "img1" && otherShape.type !== "img1") {
-                    if (shape.type === "smartpier2" && shape.y > otherShape.y)
-                      height = 50;
-                    if (
-                      shape.type === "smartpier1" &&
-                      otherShape.type === "smartpier2" &&
-                      shape.y > otherShape.y
-                    ) {
-                      height = 100;
-                      verticalSnap =
-                        Math.abs(newY - otherShape.y) <= 60 ||
-                        Math.abs(newY + height - otherShape.y) <= 60 ||
-                        Math.abs(newY - otherShape.y - height) <= 60;
-                    }
-                    if (
-                      (shape.type === "smartpier1" ||
-                        shape.type === "smartpier2") &&
-                      otherShape.type === "smartpier4"
-                    ) {
-                      height = 100;
-                      const variableLengthY = 20;
-                      verticalSnap =
-                        Math.abs(newY - otherShape.y) <= variableLengthY ||
-                        Math.abs(newY + height - otherShape.y) <=
-                          variableLengthY ||
-                        Math.abs(newY - otherShape.y - height) <=
-                          variableLengthY;
-                      horizontalSnap =
-                        Math.abs(newX - otherShape.x) <= 60 ||
-                        Math.abs(newX + width - otherShape.x) <= 60 ||
-                        Math.abs(newX - otherShape.x - width) <= 60;
-                    }
-                  }
                   if (
+                    shape.type !== "img1" &&
+                    otherShape.type !== "img1" &&
+                    shape.type !== otherShape.type
+                  ) {
+                    const shapes = {
+                      smartpier1: { width: 50, height: 50 },
+                      smartpier2: { width: 50, height: 100 },
+                      smartpier4: { width: 100, height: 100 },
+                    };
+                    let width = shapes[shape.type].width;
+                    let height = shapes[shape.type].height;
+                    if (shape.type === "smartpier1") {
+                      const targetDifferenceWidthRight =
+                        otherShape.type === "smartpier4" ? 55 : 20;
+                      const targetDifferenceWidthLeft =
+                        otherShape.type === "smartpier4" ? 10 : 20;
+                      let horizontalSnap =
+                        Math.abs(newX + width - otherShape.x) <=
+                          targetDifferenceWidthLeft ||
+                        Math.abs(newX - otherShape.x - width) <=
+                          targetDifferenceWidthRight;
+
+                      const targetDifferenceWidthTop =
+                        otherShape.type === "smartpier4" ? 20 : 20;
+                      const targetDifferenceWidthBottom =
+                        otherShape.type === "smartpier4" ? 60 : 60;
+                      let verticalSnap =
+                        Math.abs(newY + height - otherShape.y) <=
+                          targetDifferenceWidthTop ||
+                        Math.abs(newY - otherShape.y - height) <=
+                          targetDifferenceWidthBottom;
+
+                      if (
+                        horizontalSnap &&
+                        Math.abs(newY - otherShape.y) < height
+                      ) {
+                        const variableOffset =
+                          otherShape.type === "smartpier4" ? 60 : 10;
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + shapes[otherShape.type].width - 10
+                            : otherShape.x -
+                              shapes[otherShape.type].width +
+                              variableOffset;
+                        snapY =
+                          newY > otherShape.y
+                            ? otherShape.y + 50
+                            : otherShape.y;
+                      } else if (
+                        verticalSnap &&
+                        Math.abs(newX - otherShape.x) < width
+                      ) {
+                        const extraLength =
+                          shape.type === "smartpier1" &&
+                          ["smartpier4", "smartpier1"].includes(otherShape.type)
+                            ? 50
+                            : 0;
+
+                        snapY =
+                          newY < otherShape.y
+                            ? otherShape.y -
+                              height +
+                              offset +
+                              extraLength -
+                              (otherShape.type === "smartpier4" ? 50 : 0)
+                            : otherShape.y +
+                              height -
+                              offset +
+                              extraLength +
+                              (otherShape.type === "smartpier4" ? 0 : 50);
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + 45
+                            : otherShape.x;
+                      }
+                    } else if (shape.type === "smartpier2") {
+                      const targetDifferenceWidthRight =
+                        otherShape.type === "smartpier4" ? 55 : 20;
+                      const targetDifferenceWidthLeft =
+                        otherShape.type === "smartpier4" ? 10 : 20;
+                      let horizontalSnap =
+                        Math.abs(newX + width - otherShape.x) <=
+                          targetDifferenceWidthLeft ||
+                        Math.abs(newX - otherShape.x - width) <=
+                          targetDifferenceWidthRight;
+
+                      const targetDifferenceWidthTop =
+                        otherShape.type === "smartpier4" ? 20 : 20;
+                      const targetDifferenceWidthBottom =
+                        otherShape.type === "smartpier4" ? 60 : 60;
+                      let verticalSnap =
+                        Math.abs(newY + height - otherShape.y) <=
+                          targetDifferenceWidthTop ||
+                        Math.abs(newY - otherShape.y - height) <=
+                          targetDifferenceWidthBottom;
+
+                      if (
+                        horizontalSnap &&
+                        Math.abs(newY - otherShape.y) < height
+                      ) {
+                        const variableOffset =
+                          otherShape.type === "smartpier4" ? 60 : 10;
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + shapes[otherShape.type].width - 10
+                            : otherShape.x -
+                              shapes[otherShape.type].width +
+                              variableOffset;
+                        snapY =
+                          newY > otherShape.y
+                            ? otherShape.y + 50
+                            : otherShape.y;
+                      } else if (
+                        verticalSnap &&
+                        Math.abs(newX - otherShape.x) < width
+                      ) {
+                        const extraLength =
+                          shape.type === "smartpier1" &&
+                          ["smartpier4", "smartpier1"].includes(otherShape.type)
+                            ? 50
+                            : 0;
+
+                        snapY =
+                          newY < otherShape.y
+                            ? otherShape.y - height + offset + extraLength
+                            : otherShape.y +
+                              height -
+                              offset +
+                              extraLength +
+                              (otherShape.type === "smartpier4" ? 0 : -50);
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + 45
+                            : otherShape.x;
+                      }
+                    } else if (shape.type === "smartpier4") {
+                      const targetDifferenceWidthRight =
+                        otherShape.type === "smartpier4" ? 55 : 20;
+                      const targetDifferenceWidthLeft =
+                        otherShape.type === "smartpier4" ? 10 : 20;
+                      let horizontalSnap =
+                        Math.abs(newX + width - otherShape.x) <=
+                          targetDifferenceWidthLeft ||
+                        Math.abs(newX - otherShape.x - width) <=
+                          targetDifferenceWidthRight;
+
+                      const targetDifferenceWidthTop =
+                        otherShape.type === "smartpier4" ? 20 : 20;
+                      const targetDifferenceWidthBottom =
+                        otherShape.type === "smartpier4" ? 60 : 60;
+                      let verticalSnap =
+                        Math.abs(newY + height - otherShape.y) <=
+                          targetDifferenceWidthTop ||
+                        Math.abs(newY - otherShape.y - height) <=
+                          targetDifferenceWidthBottom;
+
+                      if (
+                        horizontalSnap &&
+                        Math.abs(newY - otherShape.y) < height / 2
+                      ) {
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + shapes[otherShape.type].width - 10
+                            : otherShape.x - shapes[otherShape.type].width - 40;
+                        snapY =
+                          newY > otherShape.y
+                            ? otherShape.y + 50
+                            : otherShape.y;
+                      } else if (
+                        verticalSnap &&
+                        Math.abs(newX - otherShape.x) < width
+                      ) {
+                        const extraLength =
+                          shape.type === "smartpier1" &&
+                          ["smartpier4", "smartpier1"].includes(otherShape.type)
+                            ? 50
+                            : 0;
+
+                        snapY =
+                          newY < otherShape.y
+                            ? otherShape.y - height + offset + extraLength
+                            : otherShape.y +
+                              height -
+                              offset +
+                              extraLength -
+                              (otherShape.type === "smartpier2" ? 0 : 50);
+                        snapX =
+                          newX > otherShape.x
+                            ? otherShape.x + 45
+                            : otherShape.x;
+                      }
+                    }
+                  } else if (
                     horizontalSnap &&
                     Math.abs(newY - otherShape.y) < height / 2
                   ) {
