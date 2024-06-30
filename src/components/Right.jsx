@@ -46,7 +46,9 @@ const Right = ({ addShape, shapes, setShapes }) => {
     >
       {selectedShapeClick && (
         <div className="text-white p-4">
-        <span>{t(`Set orientaion for pier`)} {selectedShape.id}</span>
+          <span>
+            {t(`Set orientaion for pier`)} {selectedShape.id}
+          </span>
 
           <select
             placeholder="Select the orientation"
@@ -55,7 +57,9 @@ const Right = ({ addShape, shapes, setShapes }) => {
             onChange={(e) => handleOrientationChange(e.target.value)}
           >
             <option value="Vertical">Vertical</option>
-            <option value="Horizontal">Horizontal</option>
+            {["img1", "smartpier2"].includes(selectedShape.type) && (
+              <option value="Horizontal">Horizontal</option>
+            )}
           </select>
         </div>
       )}
@@ -160,8 +164,6 @@ const Right = ({ addShape, shapes, setShapes }) => {
           </div>
         </div>
       )}
-    
-       
     </aside>
   );
 };
