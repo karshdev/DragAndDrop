@@ -8,8 +8,7 @@ const AttentionModal = () => {
         <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center rounded-lg p-2">
           <BsFillExclamationTriangleFill className="sm:text-8xl text-5xl m-8 text-red-500" />
           <span className="sm:text-xl text-md p-2 text-center">
-            This application is optimized for use on desktop computers. Please
-            access it from a larger device for the best experience
+        Esse aplicativo não é otimizado para este tamanho de tela, para uma melhor experiência recomendamos o acesso no tablet, notebook ou computador de mesa.
           </span>
         </div>
       </div>

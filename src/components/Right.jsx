@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { DataContext } from "../context/DataContext";
 import { MdDelete } from "react-icons/md";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
   const [orientation, setOrientation] = useState(
     selectedShape?.orientation ?? "Horizontal"
   );
+  const dropdownRef = useRef(null);
 
   const handleOrientationChange = (newOrientation) => {
     const newShapes = shapes.map((shape) => {
@@ -34,9 +35,27 @@ const Right = ({ addShape, shapes, setShapes }) => {
     setShapes(newShapes);
   };
 
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setOnSelectToggle(false);
+    }
+  };
+
   useEffect(() => {
     setOrientation(selectedShape?.orientation ?? "Horizontal");
   }, [selectedShape]);
+
+  useEffect(() => {
+    if (onSelectToggle) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onSelectToggle]);
 
   return (
     <aside
@@ -100,6 +119,7 @@ const Right = ({ addShape, shapes, setShapes }) => {
 
               {onSelectToggle && (
                 <div
+                  ref={dropdownRef}
                   className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   role="menu"
                   aria-orientation="vertical"
@@ -150,17 +170,6 @@ const Right = ({ addShape, shapes, setShapes }) => {
                 </div>
               )}
             </div>
-          </div>
-          <div className="mb-4 ">
-            <button className="rounded-lg w-full border bg-sky-600 hover:bg-sky-700 p-2 my-2 text-white ">
-              {t(`duplicate`)}
-            </button>
-            <button className="flex items-center justify-center rounded-lg w-full border border-[#721C24] bg-[#F8D7DA] hover:bg-red-300 p-2 my-2 text-[#721C24] ">
-              <span className="px-1">
-                <MdDelete />
-              </span>
-              {t(`delete`)}
-            </button>
           </div>
         </div>
       )}
