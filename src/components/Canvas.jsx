@@ -537,7 +537,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   const drawConnectors = (ctx) => {
     shapes.forEach((shape, index) => {
       shapes.slice(index + 1).forEach((otherShape) => {
-        if (shape.type === otherShape.type) {
+        if (shape.type === otherShape.type && shape.type === "img1") {
           if (shape.orientation !== otherShape.orientation) {
             const {
               closeX,
@@ -1349,7 +1349,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   }
                 }
                 if (shape.orientation === otherShape.orientation) {
-                  offset = 10;
                   if (shape.type !== "img1") {
                     const leftMostShapeWidth =
                       newX > otherShape.x
