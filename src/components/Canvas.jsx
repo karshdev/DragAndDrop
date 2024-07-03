@@ -1349,7 +1349,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
                   }
                 }
                 if (shape.orientation === otherShape.orientation) {
-                  offset = 10;
                   if (shape.type !== "img1") {
                     const leftMostShapeWidth =
                       newX > otherShape.x
