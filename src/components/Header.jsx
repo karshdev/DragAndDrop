@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 const Header = ({ setShapes, undo }) => {
   const { t } = useTranslation();
-  const { setZoomLevel } = useContext(DataContext);
+  const { setZoomLevel, submitClicked, setSubmitClicked } = useContext(DataContext);
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -18,6 +18,7 @@ const Header = ({ setShapes, undo }) => {
     state: "",
     city: "",
   });
+  const [errors, setErrors] = useState({});
   const states = ["São Paulo", "Rio de Janeiro", "Minas Gerais"];
   const citiesByState = [
     "São Paulo City",
@@ -49,12 +50,31 @@ const Header = ({ setShapes, undo }) => {
       ...prevFormData,
       [name]: value,
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    togglePopup();
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key]) {
+        newErrors[key] = `${key} is required`;
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+    } else {
+      console.log("Clicked Submit");
+      setSubmitClicked({
+        toggle: true,
+        email: formData.email,
+      });
+      togglePopup();
+    }
   };
 
   return (
@@ -141,6 +161,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Name"
                 />
+                {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">Email:</label>
@@ -152,6 +173,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Email"
                 />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">Telephone:</label>
@@ -163,6 +185,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Telephone"
                 />
+                {errors.telephone && <p className="text-red-500 text-sm">{errors.telephone}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">Address:</label>
@@ -174,6 +197,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Address"
                 />
+                {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">Number:</label>
@@ -185,6 +209,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Number"
                 />
+                {errors.number && <p className="text-red-500 text-sm">{errors.number}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">Neighborhood:</label>
@@ -196,6 +221,7 @@ const Header = ({ setShapes, undo }) => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="Your Neighborhood"
                 />
+                {errors.neighborhood && <p className="text-red-500 text-sm">{errors.neighborhood}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">State:</label>
@@ -212,6 +238,7 @@ const Header = ({ setShapes, undo }) => {
                     </option>
                   ))}
                 </select>
+                {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
               </div>
               <div>
                 <label className="block text-gray-700">City:</label>
@@ -228,6 +255,7 @@ const Header = ({ setShapes, undo }) => {
                     </option>
                   ))}
                 </select>
+                {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
               </div>
               <div className="col-span-2 flex justify-end">
                 <button

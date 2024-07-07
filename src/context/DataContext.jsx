@@ -10,7 +10,10 @@ export const DataProvider = ({ children }) => {
   const [smartPierClicked, setSmartPierClicked] = useState(false);
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedShapeClick, setSelectedShapeClick] = useState(false);
-
+  const[submitClicked,setSubmitClicked]=useState({
+    toggle:false,
+    email:""
+  })
   const changeLanguage = (lng) => {
     setLang(lng);
     i18n.changeLanguage(lng);
@@ -30,6 +33,8 @@ export const DataProvider = ({ children }) => {
         setSelectedShapeClick,
         changeLanguage,
         lang,
+        setSubmitClicked,
+        submitClicked
       }}
     >
       {children}
