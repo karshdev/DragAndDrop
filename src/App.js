@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
 import DragImage from "./components/DragImage";
 import Header from "./components/Header";
 import Right from "./components/Right";
 import Sidebar from "./components/Sidebar";
 import AttentionModal from "./components/AttentionModal";
+import { DataContext } from "./context/DataContext";
 
 const App = () => {
+  const { setHistory, history } = useContext(DataContext);
+
   const [shapes, setShapes] = useState([]);
-  const [history, setHistory] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
 
   const canvasWidth = 1000;
   const canvasHeight = 610;
 
   const addShape = (type) => {
-    const shapes = {
+    const shape = {
       smartpier1: { width: 50, height: 50 },
       smartpier2: { width: 50, height: 100 },
       smartpier4: { width: 100, height: 100 },
       img1: { width: 100, height: 150 },
     };
-    const shapeWidth = shapes[type].width;
-    const shapeHeight = shapes[type].height;
+    const shapeWidth = shape[type].width;
+    const shapeHeight = shape[type].height;
 
     const centerX = (canvasWidth - shapeWidth) / 2;
     const centerY = (canvasHeight - shapeHeight) / 2;
@@ -46,10 +48,7 @@ const App = () => {
   };
 
   const undo = () => {
-    console.log("Clicked");
     if (history.length > 0) {
-      console.log("history.length", history.length);
-
       const lastState = history[history.length - 1];
       setHistory(history.slice(0, history.length - 1));
       setShapes(lastState);
@@ -85,7 +84,12 @@ const App = () => {
             saveStateToHistory={saveStateToHistory}
           />
           <DragImage shapes={shapes} setShapes={setShapes} />
-          <Right addShape={addShape} shapes={shapes} setShapes={setShapes} />
+          <Right
+            addShape={addShape}
+            shapes={shapes}
+            setShapes={setShapes}
+            saveStateToHistory={saveStateToHistory}
+          />
         </div>
       )}
     </>
