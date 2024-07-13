@@ -1,10 +1,11 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const { i18n } = useTranslation();
+  const canvasRef = useRef(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [lang, setLang] = useState("pt");
   const [smartPierClicked, setSmartPierClicked] = useState(false);
@@ -43,6 +44,7 @@ export const DataProvider = ({ children }) => {
         submitClicked,
         setHistory,
         history,
+        canvasRef
       }}
     >
       {children}

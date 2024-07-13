@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import { IoDuplicateOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 
-const Right = ({ addShape, shapes, setShapes,saveStateToHistory }) => {
+const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
   const { t } = useTranslation();
   const {
     smartPierClicked,
@@ -12,6 +12,8 @@ const Right = ({ addShape, shapes, setShapes,saveStateToHistory }) => {
     selectedShapeClick,
     setHistory,
     history,
+    canvasRef,
+    setSmartPierClicked,
   } = useContext(DataContext);
   const [onSelectToggle, setOnSelectToggle] = useState(false);
   const [orientation, setOrientation] = useState(
@@ -139,7 +141,7 @@ const Right = ({ addShape, shapes, setShapes,saveStateToHistory }) => {
                       <a
                         href="#"
                         onClick={() => {
-                          saveStateToHistory()
+                          saveStateToHistory();
                           addShape("smartpier1");
                           setOnSelectToggle(false);
                         }}
@@ -153,7 +155,7 @@ const Right = ({ addShape, shapes, setShapes,saveStateToHistory }) => {
                       <a
                         href="#"
                         onClick={() => {
-                          saveStateToHistory()
+                          saveStateToHistory();
                           addShape("smartpier2");
                           setOnSelectToggle(false);
                         }}
@@ -167,7 +169,7 @@ const Right = ({ addShape, shapes, setShapes,saveStateToHistory }) => {
                       <a
                         href="#"
                         onClick={() => {
-                          saveStateToHistory()
+                          saveStateToHistory();
                           addShape("smartpier4");
                           setOnSelectToggle(false);
                         }}
