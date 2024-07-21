@@ -192,7 +192,7 @@ const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
         <div className="mb-2 mx-2 ">
           <button
             onClick={onDuplicate}
-            className="flex items-center justify-center rounded-lg w-full border bg-sky-600 hover:bg-sky-700 p-2 my-2 text-white "
+            className="flex items-center justify-center  w-full rounded-full border bg-sky-600 hover:bg-sky-700 p-2 my-2 text-white "
           >
             <span className="px-1">
               <IoDuplicateOutline />
@@ -201,7 +201,7 @@ const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
           </button>
           <button
             onClick={onDelete}
-            className="flex items-center justify-center rounded-lg w-full border border-[#721C24] bg-[#F8D7DA] hover:bg-red-300 p-2 my-2 text-[#721C24] "
+            className="flex items-center justify-center rounded-full  w-full border border-[#721C24] bg-[#F8D7DA] hover:bg-red-300 p-2 my-2 text-[#721C24] "
           >
             <span className="px-1">
               <MdDelete />

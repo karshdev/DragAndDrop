@@ -11,26 +11,11 @@ const Header = ({ setShapes, undo }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    telephone: "",
-    address: "",
-    number: "",
-    neighborhood: "",
-    state: "",
-    city: "",
+    phone: "",
+    message:""
   });
   const [errors, setErrors] = useState({});
-  const states = ["São Paulo", "Rio de Janeiro", "Minas Gerais"];
-  const citiesByState = [
-    "São Paulo City",
-    "Campinas",
-    "Santos",
-    "Rio de Janeiro City",
-    "Niterói",
-    "Nova Iguaçu",
-    "Belo Horizonte",
-    "Uberlândia",
-    "Contagem",
-  ];
+
 
   const handleZoomIn = () => {
     setZoomLevel((prevZoomLevel) => Math.min(prevZoomLevel * 1.2, 5));
@@ -68,10 +53,9 @@ const Header = ({ setShapes, undo }) => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      console.log("Clicked Submit");
       setSubmitClicked({
         toggle: true,
-        email: formData.email,
+        data: formData,
       });
       togglePopup();
     }
@@ -82,17 +66,23 @@ const Header = ({ setShapes, undo }) => {
       <div className="mx-auto flex flex-wrap py-4 px-1 flex-col md:flex-row justify-between items-center">
         <div className="flex pl-2 w-auto">
           <div className="flex px-4">
-            <div className="flex flex-col items-center px-2 hover:text-gray-800 cursor-pointer">
+            <div className="flex flex-col items-center px-2 hover:text-gray-800 cursor-pointer border-r border-r-[#eff3fb] mr-[20px]">
               <TbArrowBackUp className="text-2xl" onClick={undo} />
-              <span className="flex flex-col items-center px-2">{t(`undo`)}</span>
+              <span className="flex flex-col items-center px-2 text-[14px]">{t(`undo`)}</span>
             </div>
           </div>
           <button
             onClick={() => setShapes([])}
-            className="rounded border border-slate-400 hover:bg-gray-200 px-2 hover:text-gray-800 cursor-pointer"
+            className="w-36 text-white bg-blue-700 rounded-full border-none text-shadow-none hover:bg-customHover"
           >
             {t(`startOver`)}
           </button>
+        </div>
+        <div>
+          <div className="ml-[250px]">
+          <img src="/assets/logo.svg" alt="logo" height={75} width={75} />
+
+          </div>
         </div>
         <div className="flex pl-2">
           <div className="flex px-4 w-[21rem] justify-end">
@@ -100,8 +90,8 @@ const Header = ({ setShapes, undo }) => {
               onClick={handleZoomIn}
               className="flex flex-col items-center px-2 hover:text-gray-800 cursor-pointer"
             >
-              <CiZoomIn className="text-2xl" />
-              <span className="flex flex-col items-center px-2 text-sm max-w-max">
+              <CiZoomIn className="text-2xl text-[#1558e5] font-bold	" />
+              <span className="flex flex-col items-center px-2 text-sm max-w-max text-[#62656a]">
                 {t(`zoomIn`)}
               </span>
             </div>
@@ -109,17 +99,20 @@ const Header = ({ setShapes, undo }) => {
               onClick={handleZoomOut}
               className="flex flex-col items-center px-2 hover:text-gray-800 cursor-pointer"
             >
-              <CiZoomOut className="text-2xl" />
-              <span className="flex flex-col items-center text-sm max-w-max">
+              <CiZoomOut className="text-2xl text-[#1558e5] font-bold	" />
+              <span className="flex flex-col items-center text-sm max-w-max text-[#62656a]">
                 {t(`zoomOut`)}
               </span>
             </div>
           </div>
           <button
             onClick={togglePopup}
-            className="rounded border bg-sky-600 hover:bg-sky-300 px-2 text-white mx-4 max-w-max hover:text-gray-800 cursor-pointer"
+            className="w-56  border-none text-white cursor-pointer rounded-full" style={{ backgroundColor: '#f0cf2a' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e1bd0b'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f0cf2a'}
+
           >
-            {t(`requestQuotes`)}
+         <span className="text-[#62656a]">
+         {t(`requestQuotes`)}
+         </span>
           </button>
         </div>
       </div>
@@ -147,125 +140,97 @@ const Header = ({ setShapes, undo }) => {
                 </svg>
               </button>
             </div>
-            <h2 className="text-xl font-bold mb-4 text-green-700">
-              {t(`requestQuotes`)}
+            <h2 className="text-xl font-bold mb-4 text-[#62656a]">
+            {t(`requestQuotes`)}
             </h2>
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700">Name:</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Name"
-                />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">Email:</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Email"
-                />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">Telephone:</label>
-                <input
-                  type="tel"
-                  name="telephone"
-                  value={formData.telephone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Telephone"
-                />
-                {errors.telephone && <p className="text-red-500 text-sm">{errors.telephone}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">Address:</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Address"
-                />
-                {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">Number:</label>
-                <input
-                  type="text"
-                  name="number"
-                  value={formData.number}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Number"
-                />
-                {errors.number && <p className="text-red-500 text-sm">{errors.number}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">Neighborhood:</label>
-                <input
-                  type="text"
-                  name="neighborhood"
-                  value={formData.neighborhood}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Your Neighborhood"
-                />
-                {errors.neighborhood && <p className="text-red-500 text-sm">{errors.neighborhood}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">State:</label>
-                <select
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                >
-                  <option value="">Select State</option>
-                  {states.map((state) => (
-                    <option key={state} value={state}>
-                      {state}
-                    </option>
-                  ))}
-                </select>
-                {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-700">City:</label>
-                <select
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded"
-                >
-                  <option value="">Select City</option>
-                  {citiesByState.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
-                {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
-              </div>
-              <div className="col-span-2 flex justify-end">
-                <button
-                  type="submit"
-                  className="rounded bg-green-500 hover:bg-green-700 text-white px-4 py-2 hover:text-gray-800 cursor-pointer"
-                >
-                  {t(`submit`)}
-                </button>
-              </div>
-            </form>
+            <form onSubmit={handleSubmit} className="p-1 space-y-2">
+  <div>
+    <label htmlFor="name" className="block text-[#62656a] mb-1">Seu nome</label>
+    <input
+      id="name"
+      type="text"
+      name="name"
+      value={formData.name}
+      onChange={handleInputChange}
+      className="w-full px-3 py-2 border border-gray-300 rounded"
+      placeholder="Seu nome"
+      required
+    />
+    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+  </div>
+
+  <div>
+    <label htmlFor="email" className="block text-[#62656a] mb-1">Seu email</label>
+    <input
+      id="email"
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleInputChange}
+      className="w-full px-3 py-2 border border-gray-300 rounded"
+      placeholder="Seu email"
+      required
+    />
+    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+  </div>
+
+  <div>
+    <label htmlFor="phone" className="block text-[#62656a] mb-1">Telefone</label>
+    <input
+      id="phone"
+      type="tel"
+      name="phone"
+      value={formData.phone}
+      onChange={handleInputChange}
+      className="w-full px-3 py-2 border border-gray-300 rounded"
+      placeholder="(DDD) Telefone"
+      required
+      // Add mask logic for DDD code zone here
+    />
+    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+  </div>
+
+  <div>
+    <label htmlFor="message" className="block text-[#62656a] mb-1">Sua mensagem</label>
+    <textarea
+      id="message"
+      name="message"
+      value={formData.message}
+      onChange={handleInputChange}
+      className="w-full px-3 py-2 border border-gray-300 rounded"
+      placeholder="Sua mensagem"
+      rows="4"
+      required
+    />
+    {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+  </div>
+
+  <div className="flex items-center space-x-2">
+    <input
+      id="confirmation"
+      type="checkbox"
+      name="confirmation"
+      className="h-4 w-4 text-green-500 border-gray-300 rounded"
+      required
+    />
+    <label htmlFor="confirmation" className="text-[#62656a]">
+      Confirmo o envio das informações acima.
+    </label>
+  </div>
+
+  <div className="flex justify-end">
+    <button
+      type="submit"
+      className="w-[140px] p-2 border-none text-white cursor-pointer rounded-full" style={{ backgroundColor: '#f0cf2a' }}
+    >
+    <span className="text-[#62656a]">
+
+    {t(`submit`)}
+    </span>
+    </button>
+  </div>
+</form>
+
           </div>
         </div>
       )}

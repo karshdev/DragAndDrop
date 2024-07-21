@@ -330,7 +330,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.rotate(shape.rotation || 0);
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
-    let arrowSize = 10;
+    let arrowSize = 0;
     // Draw width measurement on top
     if (!shape.isShapeConnectedTop) {
       ctx.beginPath();
@@ -1663,7 +1663,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       console.error("Failed to upload file:", response.statusText);
     }
   };
-  const sendEmail = async (secureUrl, email) => {
+  const sendEmail = async (secureUrl, data) => {
     const response = await fetch(
       `${process.env.REACT_APP_API_URL}api/send-email`,
       {
@@ -1671,7 +1671,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ file: secureUrl, email: email }),
+        body: JSON.stringify({ file: secureUrl, data: data }),
       }
     );
     if (response.ok) {
@@ -1699,11 +1699,17 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
         const secureUrl = await handleEmail(file);
 
-        if (secureUrl && submitClicked.email) {
-          const sendmail = await sendEmail(secureUrl, submitClicked.email);
+        if (secureUrl && submitClicked.data.email) {
+          
+          const sendmail = await sendEmail(secureUrl, submitClicked.data);
           setSubmitClicked({
             toggle: false,
-            email: "",
+            data: {
+              name: "",
+              email: "",
+              phone: "",
+              message:""
+            },
           });
         }
       } catch (error) {
@@ -1716,7 +1722,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       handleTakeScreenshot();
     }
   }, [submitClicked.toggle]);
-  console.log("submitClicked.toggle", submitClicked.toggle);
   return (
     <div className="simulation">
       <canvas
