@@ -72,13 +72,13 @@ const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
   return (
     <aside
       id="logo-sidebar"
-      className="fixed mt-[80px] border-l top-0 right-0 flex flex-col justify-between z-40 w-64 transition-transform -translate-x-full sm:translate-x-0 bg-gray-800 border-gray-700"
+      className="fixed mt-[80px] border-l top-0 right-0 flex flex-col justify-between z-40 w-64 transition-transform -translate-x-full sm:translate-x-0 bg-white "
       aria-label="Sidebar"
       style={{ height: "calc(100vh - 80px)" }}
     >
       <div style={{ height: "calc(50vh - 80px)" }}>
         {selectedShapeClick && (
-          <div className="text-white p-4">
+          <div className="text-[#62656a] p-4">
             <span>
               {t(`Set orientaion for pier`)} {selectedShape.id}
             </span>
@@ -86,7 +86,7 @@ const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
             <select
               placeholder="Select the orientation"
               value={orientation}
-              className="p-1 text-black border-none rounded w-full mt-2"
+              className="p-1 text-black border-black rounded w-full mt-2"
               onChange={(e) => handleOrientationChange(e.target.value)}
             >
               <option value="Vertical">Vertical</option>
@@ -98,7 +98,7 @@ const Right = ({ addShape, shapes, setShapes, saveStateToHistory }) => {
         )}
         {smartPierClicked && (
           <div className=" w-full py-2 px-5">
-            <div className="text-white">
+            <div className="text-[#62656a]">
               <div>
                 {t(`image`)} : <strong>Smart Pier</strong>
               </div>

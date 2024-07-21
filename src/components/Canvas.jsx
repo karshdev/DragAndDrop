@@ -164,11 +164,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
           ctx.fillRect(x + canvasOffset.x, y + canvasOffset.y, width, height);
         }
       }
-
-      // Draw measurements
-
-      // Draw rotating curved arrows
-      // drawCurvedArrow(ctx, x - width / 2, y - height / 2, 20, Math.PI * 0.5, Math.PI * 0.8, false);
     });
   };
 
@@ -328,132 +323,132 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       shape.y + height / 2 + canvasOffset.y
     );
     ctx.rotate(shape.rotation || 0);
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "black";
+    // ctx.font = "12px Arial";
+    // ctx.fillStyle = "black";
     let arrowSize = 0;
     // Draw width measurement on top
-    if (!shape.isShapeConnectedTop) {
-      ctx.beginPath();
-      ctx.moveTo(
-        -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-      );
-      ctx.lineTo(
-        width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-      );
-      ctx.stroke();
+    // if (!shape.isShapeConnectedTop) {
+    //   ctx.beginPath();
+    //   ctx.moveTo(
+    //     -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+    //   );
+    //   ctx.lineTo(
+    //     width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+    //   );
+    //   ctx.stroke();
 
-      // Draw arrows for width
-      ctx.beginPath();
-      ctx.moveTo(
-        -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-      );
-      ctx.lineTo(
-        -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 -
-          (shape.orientation === "Horizontal" ? 0 : 20) -
-          arrowSize / 2
-      );
-      ctx.lineTo(
-        -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 -
-          (shape.orientation === "Horizontal" ? 0 : 20) +
-          arrowSize / 2
-      );
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(
-        width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
-      );
-      ctx.lineTo(
-        width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 -
-          (shape.orientation === "Horizontal" ? 0 : 20) -
-          arrowSize / 2
-      );
-      ctx.lineTo(
-        width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
-        -height / 2 -
-          (shape.orientation === "Horizontal" ? 0 : 20) +
-          arrowSize / 2
-      );
-      ctx.closePath();
-      ctx.fill();
+    //   // Draw arrows for width
+    //   ctx.beginPath();
+    //   ctx.moveTo(
+    //     -width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+    //   );
+    //   ctx.lineTo(
+    //     -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 -
+    //       (shape.orientation === "Horizontal" ? 0 : 20) -
+    //       arrowSize / 2
+    //   );
+    //   ctx.lineTo(
+    //     -width / 2 + arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 -
+    //       (shape.orientation === "Horizontal" ? 0 : 20) +
+    //       arrowSize / 2
+    //   );
+    //   ctx.closePath();
+    //   ctx.fill();
+    //   ctx.beginPath();
+    //   ctx.moveTo(
+    //     width / 2 - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 - (shape.orientation === "Horizontal" ? 0 : 20)
+    //   );
+    //   ctx.lineTo(
+    //     width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 -
+    //       (shape.orientation === "Horizontal" ? 0 : 20) -
+    //       arrowSize / 2
+    //   );
+    //   ctx.lineTo(
+    //     width / 2 - arrowSize - (shape.orientation === "Horizontal" ? 20 : 0),
+    //     -height / 2 -
+    //       (shape.orientation === "Horizontal" ? 0 : 20) +
+    //       arrowSize / 2
+    //   );
+    //   ctx.closePath();
+    //   ctx.fill();
 
-      // Draw width text
-      ctx.fillText(
-        `${parseInt(width / zoomLevel)}`,
-        -(shape.orientation === "Horizontal" ? 25 : 10),
-        -height / 2 - (shape.orientation === "Horizontal" ? 10 : 25)
-      );
-    }
+    //   // Draw width text
+    //   ctx.fillText(
+    //     `${parseInt(width / zoomLevel)}`,
+    //     -(shape.orientation === "Horizontal" ? 25 : 10),
+    //     -height / 2 - (shape.orientation === "Horizontal" ? 10 : 25)
+    //   );
+    // }
 
-    if (!shape.isShapeConnectedLeft) {
-      // Draw height measurement on the left
-      ctx.beginPath();
-      if (shape.orientation !== "Horizontal") {
-        ctx.moveTo(-width / 2 - 20, -height / 2);
-        ctx.lineTo(-width / 2 - 20, height / 2);
-      } else {
-        ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
-        ctx.lineTo(-width / 2 - 40, height / 2 + 20);
-      }
-      ctx.stroke();
+    // if (!shape.isShapeConnectedLeft) {
+    //   // Draw height measurement on the left
+    //   ctx.beginPath();
+    //   if (shape.orientation !== "Horizontal") {
+    //     ctx.moveTo(-width / 2 - 20, -height / 2);
+    //     ctx.lineTo(-width / 2 - 20, height / 2);
+    //   } else {
+    //     ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+    //     ctx.lineTo(-width / 2 - 40, height / 2 + 20);
+    //   }
+    //   ctx.stroke();
 
-      // Draw arrows for height
-      ctx.beginPath();
-      if (shape.orientation !== "Horizontal") {
-        ctx.moveTo(-width / 2 - 20, -height / 2);
-        ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
-        ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
-      } else {
-        ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
-        ctx.lineTo(
-          -width / 2 - 40 - arrowSize / 2,
-          -height / 2 + arrowSize + 20
-        );
-        ctx.lineTo(
-          -width / 2 - 40 + arrowSize / 2,
-          -height / 2 + arrowSize + 20
-        );
-      }
-      ctx.closePath();
-      ctx.fill();
+    //   // Draw arrows for height
+    //   ctx.beginPath();
+    //   if (shape.orientation !== "Horizontal") {
+    //     ctx.moveTo(-width / 2 - 20, -height / 2);
+    //     ctx.lineTo(-width / 2 - 20 - arrowSize / 2, -height / 2 + arrowSize);
+    //     ctx.lineTo(-width / 2 - 20 + arrowSize / 2, -height / 2 + arrowSize);
+    //   } else {
+    //     ctx.moveTo(-width / 2 - 40, -height / 2 + 20);
+    //     ctx.lineTo(
+    //       -width / 2 - 40 - arrowSize / 2,
+    //       -height / 2 + arrowSize + 20
+    //     );
+    //     ctx.lineTo(
+    //       -width / 2 - 40 + arrowSize / 2,
+    //       -height / 2 + arrowSize + 20
+    //     );
+    //   }
+    //   ctx.closePath();
+    //   ctx.fill();
 
-      ctx.beginPath();
-      if (shape.orientation !== "Horizontal") {
-        ctx.moveTo(-width / 2 - 20, height / 2);
-        ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
-        ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
-      } else {
-        ctx.moveTo(-width / 2 - 40, height / 2 + 20);
-        ctx.lineTo(
-          -width / 2 - 40 - arrowSize / 2,
-          height / 2 - arrowSize + 20
-        );
-        ctx.lineTo(
-          -width / 2 - 40 + arrowSize / 2,
-          height / 2 - arrowSize + 20
-        );
-      }
-      ctx.closePath();
-      ctx.fill();
+    //   ctx.beginPath();
+    //   if (shape.orientation !== "Horizontal") {
+    //     ctx.moveTo(-width / 2 - 20, height / 2);
+    //     ctx.lineTo(-width / 2 - 20 - arrowSize / 2, height / 2 - arrowSize);
+    //     ctx.lineTo(-width / 2 - 20 + arrowSize / 2, height / 2 - arrowSize);
+    //   } else {
+    //     ctx.moveTo(-width / 2 - 40, height / 2 + 20);
+    //     ctx.lineTo(
+    //       -width / 2 - 40 - arrowSize / 2,
+    //       height / 2 - arrowSize + 20
+    //     );
+    //     ctx.lineTo(
+    //       -width / 2 - 40 + arrowSize / 2,
+    //       height / 2 - arrowSize + 20
+    //     );
+    //   }
+    //   ctx.closePath();
+    //   ctx.fill();
 
-      // Draw height text
-      ctx.save();
-      ctx.translate(-width / 2 - 25, 0);
-      ctx.rotate(-Math.PI / 2);
-      if (shape.orientation !== "Horizontal") {
-        ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
-      } else {
-        ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
-      }
-      ctx.restore();
-    }
+    //   // Draw height text
+    //   ctx.save();
+    //   ctx.translate(-width / 2 - 25, 0);
+    //   ctx.rotate(-Math.PI / 2);
+    //   if (shape.orientation !== "Horizontal") {
+    //     ctx.fillText(`${parseInt(height / zoomLevel)}`, -10, 5);
+    //   } else {
+    //     ctx.fillText(`${parseInt(height / zoomLevel)}`, -30, -20);
+    //   }
+    //   ctx.restore();
+    // }
     ctx.restore();
   };
 
@@ -461,13 +456,13 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     if (!rotateIconImage) return;
 
     let width, height;
-    if (shape.type === "img1") {
-      width = 100;
-      height = 150;
-    } else if (shape.type === "img2") {
-      width = 50;
-      height = 50;
-    }
+      if (shape.type === "img1") {
+        width = 100;
+        height = 150;
+      } else if (shape.type === "img2") {
+        width = 50;
+        height = 50;
+      }
 
     ctx.save();
     ctx.translate(shape.x + width / 2, shape.y + height / 2);

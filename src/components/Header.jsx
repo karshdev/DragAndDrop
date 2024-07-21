@@ -79,10 +79,7 @@ const Header = ({ setShapes, undo }) => {
           </button>
         </div>
         <div>
-          <div className="ml-[250px]">
-          <img src="/assets/logo.svg" alt="logo" height={75} width={75} />
-
-          </div>
+         
         </div>
         <div className="flex pl-2">
           <div className="flex px-4 w-[21rem] justify-end">

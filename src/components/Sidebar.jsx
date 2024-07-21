@@ -8,10 +8,10 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
     <>
       <aside
         id="logo-sidebar"
-        className="fixed top-0 mt-[80px] left-0 z-40 w-64 h-screen py-4 transition-transform -translate-x-full border-r sm:translate-x-0 bg-gray-800 border-gray-700"
+        className="fixed top-0 mt-[68px] left-0 z-40 w-64 h-screen py-4 transition-transform -translate-x-full border-r sm:translate-x-0"
         aria-label="Sidebar"
       >
-        <div className="h-full px-6 pb-4 overflow-y-auto bg-gray-800">
+        <div className="h-full px-6 pb-4 overflow-y-auto bg-white">
           <ul className="space-y-2 font-medium">
             <li
               onClick={() => {
@@ -25,7 +25,7 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
                 className="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-gray-700 group"
               >
                 <svg
-                  className="w-5 h-5 transition duration-75 group-hover:text-gray-700 "
+                  className="w-5 h-5 transition duration-75 text-[#62656a] group-hover:text-gray-700 "
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -36,7 +36,9 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
                 </svg>
                 <button className="flex items-center p-2 rounded-lg hover:text-gray-700  group">
                 
-                  Easy pier
+                <span className="text-[#62656a]">
+                Easy pier
+                  </span>
        
                 </button>
               </a>
@@ -52,7 +54,7 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
                 className="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-gray-700 group"
               >
                 <svg
-                  className="flex-shrink-0 w-5 h-5 transition duration-75 group-hover:text-gray-700 "
+                  className="flex-shrink-0 w-5 h-5 text-[#62656a] transition duration-75 group-hover:text-gray-700 "
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -62,13 +64,22 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
                 </svg>
                 <button className="flex items-center p-2 rounded-lg hover:text-gray-700  group">
               
-                  Smart Pier
+                <span className="text-[#62656a]">
+                 Smart Pier
+                </span>
                
                 </button>
               </a>
             </li>
           </ul>
+          <img src="/assets/logo.svg" alt="logo" height={75} width={75} className="mt-[500px]" />
+
         </div>
+
+      <div>
+
+      </div>
+    
       </aside>
     </>
   );
