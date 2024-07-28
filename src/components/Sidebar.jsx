@@ -1,14 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { DataContext } from "../context/DataContext";
 
 const Sidebar = ({ addShape, saveStateToHistory }) => {
-  const { setSmartPierClicked } = useContext(DataContext);
-
+  const { setSmartPierClicked,selectedShape } = useContext(DataContext);
+ 
   return (
     <>
       <aside
         id="logo-sidebar"
-        className="fixed top-0 mt-[68px] left-0 z-40 w-64 h-screen py-4 transition-transform -translate-x-full border-r sm:translate-x-0"
+        className="fixed top-0 mt-[64px] left-0 z-40 w-64 h-screen py-4 transition-transform -translate-x-full border-r sm:translate-x-0"
         aria-label="Sidebar"
       >
         <div className="h-full px-6 pb-4 overflow-y-auto bg-white">
@@ -72,7 +72,74 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
               </a>
             </li>
           </ul>
-          <img src="/assets/logo.svg" alt="logo" height={75} width={75} className="mt-[500px]" />
+          <div className="p-8 relative">
+            {selectedShape?.type && (
+              <div
+                className="relative inline-block"
+                style={{
+                  transform: `${selectedShape.orientation === "Horizontal" ? "rotate(90deg)" : ""}`,
+                }}
+              >
+                <img
+                  src={`/assets/${
+                    selectedShape.type === "img1"
+                      ? "Easy_Pier.svg"
+                      : selectedShape.type === "smartpier1"
+                      ? "SmartPierModule1.svg"
+                      : selectedShape.type === "smartpier2"
+                      ? "SmartPierModule2.svg"
+                      : "SmartPierModule4.svg"
+                  }`}
+                  height={selectedShape.height}
+                  width={selectedShape.width}
+                  alt="Selected Shape"
+                />
+                <div
+                  className="absolute -top-2 left-1/2"
+                  style={{
+                    width: selectedShape.width,
+                    height: "2px",
+                    backgroundColor: "black",
+                    transform: "translateX(-50%)",
+                  }}
+                />
+                <div
+                  className="absolute -top-2 left-1/2"
+                  style={{
+                    transform: "translateX(-50%) translateY(-20px)",
+                    backgroundColor:"white",
+                    padding: "0 2px",
+                  }}
+                >
+                <span className="text-[13px]">
+                {selectedShape.width}px
+                </span>
+                </div>
+                <div
+                  className="absolute top-1/2 -left-2"
+                  style={{
+                    width: "2px",
+                    height: selectedShape.height,
+                    backgroundColor: "black",
+                    transform: "translateY(-50%)",
+                  }}
+                />
+                <div
+                  className="absolute top-1/2 -left-1"
+                  style={{
+                    transform: "translateY(-50%) translateX(-30px) rotate(-90deg)",
+                    backgroundColor: "white",
+                    padding: "0 2px",
+                  }}
+                >
+     <span className="text-[13px]">
+     {selectedShape.height}px
+     </span>
+                </div>
+              </div>
+            )}
+          </div>
+          <img src="/assets/logo.svg" alt="logo" height={75} width={75} className="absolute top-[550px]" />
 
         </div>
 
