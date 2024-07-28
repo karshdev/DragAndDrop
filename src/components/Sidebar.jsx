@@ -139,7 +139,7 @@ const Sidebar = ({ addShape, saveStateToHistory }) => {
               </div>
             )}
           </div>
-          <img src="/assets/logo.svg" alt="logo" height={75} width={75} className="absolute top-[550px]" />
+          <img src="/assets/logo.svg" alt="logo" height={75} width={75} className="absolute top-[650px]" />
 
         </div>
 
