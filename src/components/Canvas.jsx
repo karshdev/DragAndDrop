@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import { DataContext } from "../context/DataContext";
 import html2canvas from "html2canvas";
+
+
 const CanvasComponent = ({ shapes, setShapes }) => {
   const [hoveredShape, setHoveredShape] = useState(null);
   const {
@@ -40,11 +42,11 @@ const CanvasComponent = ({ shapes, setShapes }) => {
 
     Promise.all([
       loadImage("/assets/Easy_Pier_Connect.svg"),
-      loadImage("/assets/Easy_Pier.svg"),
+      loadImage("/assets/easy.svg"),
       loadImage("/assets/SmartPierModule1.svg"),
       loadImage("/assets/SmartPierModule2.svg"),
       loadImage("/assets/SmartPierModule4.svg"),
-      loadImage("/assets/BG.svg"),
+      loadImage("/assets/BG.png"),
     ])
       .then(([connector, img1, smartpier1, smartpier2, smartpier4, bg]) => {
         setImages({
@@ -59,29 +61,29 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       .catch((error) => console.error("Error loading images:", error));
   }, []);
 
-  const drawGrid = (ctx, width, height, gridSize) => {
-    ctx.save();
-    ctx.strokeStyle = "#e0e0e0";
-    ctx.lineWidth = 1;
+  // const drawGrid = (ctx, width, height, gridSize) => {
+  //   ctx.save();
+  //   ctx.strokeStyle = "#e0e0e0";
+  //   ctx.lineWidth = 1;
 
-    // Draw vertical lines
-    for (let x = 0; x <= width; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
+  //   // Draw vertical lines
+  //   for (let x = 0; x <= width; x += gridSize) {
+  //     ctx.beginPath();
+  //     ctx.moveTo(x, 0);
+  //     ctx.lineTo(x, height);
+  //     ctx.stroke();
+  //   }
 
-    // Draw horizontal lines
-    for (let y = 0; y <= height; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
+  //   // Draw horizontal lines
+  //   for (let y = 0; y <= height; y += gridSize) {
+  //     ctx.beginPath();
+  //     ctx.moveTo(0, y);
+  //     ctx.lineTo(width, y);
+  //     ctx.stroke();
+  //   }
 
-    ctx.restore();
-  };
+  //   ctx.restore();
+  // };
 
   const renderCanvas = (
     ctx,
@@ -97,7 +99,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw grid lines (static background)
-    drawGrid(ctx, canvas.width, canvas.height, 50);
+    // drawGrid(ctx, canvas.width, canvas.height, 50);
     drawConnectors(ctx);
 
     // Draw each shape with zoom applied
@@ -228,8 +230,8 @@ const CanvasComponent = ({ shapes, setShapes }) => {
             : 0,
           shape.type === "img1"
             ? shape.orientation !== "Horizontal"
-              ? 154
-              : 104
+              ? 150
+              : 95
             : shape.type === "img2"
             ? 154
             : shape.type === "smartpier1"
@@ -312,7 +314,6 @@ const CanvasComponent = ({ shapes, setShapes }) => {
       width = 100 * zoomLevel;
       height = 100 * zoomLevel;
     }
-
     if (shape.orientation === "Horizontal") {
       [width, height] = [height, width];
     }
@@ -1544,6 +1545,7 @@ const CanvasComponent = ({ shapes, setShapes }) => {
     cursor: isPanning ? "grabbing" : "default",
     zIndex: 1,
     position: "relative",
+    background: "url(../../public/assets/BG.png)",
     overflow: "hidden",
   };
 
@@ -1719,16 +1721,20 @@ const CanvasComponent = ({ shapes, setShapes }) => {
   }, [submitClicked.toggle]);
   return (
     <div className="simulation">
-      <canvas
-        ref={canvasRef}
-        width={10000}
-        height={1000}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        style={canvasStyle}
-      />
+     <canvas
+  ref={canvasRef}
+  width={10000} 
+  height={1000} 
+  onMouseDown={handleMouseDown}
+  onMouseMove={handleMouseMove}
+  onMouseUp={handleMouseUp}
+  onMouseLeave={handleMouseLeave}
+  style={{  
+    background: `url(/assets/BG.png) no-repeat center center`,
+  }}
+/>
+
+      
     </div>
   );
 };

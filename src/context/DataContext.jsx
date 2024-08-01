@@ -20,9 +20,7 @@ export const DataProvider = ({ children }) => {
     setLang(lng);
     i18n.changeLanguage(lng);
     console.log(lng);
-  };
-
-  useEffect(() => {
+  };  useEffect(() => {
     if (selectedShape != null && selectedShape.type == "img1")
       setSmartPierClicked(false);
   }, [selectedShape]);

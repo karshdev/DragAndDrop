@@ -1,5 +1,5 @@
 .container {
-  background-image: url("../../public/assets/BG.svg");
+  background-image: url("../../public/assets/BG.png");
   position: relative;
   z-index: -10;
   background-size: cover;
